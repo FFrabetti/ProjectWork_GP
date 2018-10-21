@@ -1,7 +1,7 @@
-import initialpop.FullGenerator;
-import initialpop.GrowGenerator;
-import initialpop.PopulationGenerator;
-import initialpop.RampedHalfAndHalfGenerator;
+import initialization.FullGenerator;
+import initialization.GrowGenerator;
+import initialization.PopulationGenerator;
+import initialization.RampedHalfAndHalfGenerator;
 import mockimpl.MockFactory;
 import model.Node;
 import model.NodeFactory;

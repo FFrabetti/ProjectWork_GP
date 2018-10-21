@@ -1,4 +1,4 @@
-package initialpop;
+package initialization;
 
 import model.Node;
 import model.NodeFactory;
@@ -29,6 +29,7 @@ public class RampedHalfAndHalfGenerator extends PopulationGenerator {
 		Node[] population = new Node[size];
 		
 		for(int i=0; i<size; i++) { // ramped: variable depth
+			// offset+1 because the upper bound is exclusive
 			int depth = offset>0 ? minDepth + rnd.nextInt(offset+1) : minDepth;
 			population[i] = newIndividual(depth);
 		}

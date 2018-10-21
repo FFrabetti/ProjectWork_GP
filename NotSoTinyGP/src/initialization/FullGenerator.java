@@ -1,4 +1,4 @@
-package initialpop;
+package initialization;
 
 import model.NodeFactory;
 
