@@ -16,4 +16,9 @@ public class NumNode extends TerminalNode {
 		v.visit(this);
 	}
 	
+	@Override
+	public String toString() {
+		return String.valueOf(num);
+	}
+	
 }

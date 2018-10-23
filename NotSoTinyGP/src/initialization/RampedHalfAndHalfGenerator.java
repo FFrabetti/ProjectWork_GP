@@ -28,7 +28,8 @@ public class RampedHalfAndHalfGenerator extends PopulationGenerator {
 	public Node[] generate(int size) {
 		Node[] population = new Node[size];
 		
-		for(int i=0; i<size; i++) { // ramped: variable depth
+		for(int i=0; i<size; i++) {
+			// ramped: variable depth
 			// offset+1 because the upper bound is exclusive
 			int depth = offset>0 ? minDepth + rnd.nextInt(offset+1) : minDepth;
 			population[i] = newIndividual(depth);

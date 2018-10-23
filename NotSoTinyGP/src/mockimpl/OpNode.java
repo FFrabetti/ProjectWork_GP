@@ -22,4 +22,10 @@ public class OpNode extends FunctionNode {
 		v.visit(this);
 	}
 	
+	@Override
+	public String toString() {
+		Node[] c = getChildren();
+		return "(" + c[0] + "," + c[1] + ")";
+	}
+	
 }

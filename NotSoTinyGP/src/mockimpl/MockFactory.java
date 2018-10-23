@@ -32,7 +32,7 @@ public class MockFactory extends NodeFactory {
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		return new NumNode(4);
+		return new NumNode(RandomGenerator.getInstance().nextInt(10));
 	}
 
 	@Override

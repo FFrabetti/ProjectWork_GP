@@ -9,12 +9,15 @@ import visitor.CountVisitor;
 
 public class TestMain {
 
+	public static final int POPSIZE = 500;
+	
 	public static void main(String[] args) {
 
+		// p = probability of choosing a terminal rather than a function
 		NodeFactory factory = new MockFactory(0.5);
 		
-		PopulationGenerator full = new FullGenerator(factory, 5);
-		PopulationGenerator grow = new GrowGenerator(factory, 5);
+		PopulationGenerator full = new FullGenerator(factory, 3);
+		PopulationGenerator grow = new GrowGenerator(factory, 3);
 		PopulationGenerator ramped = new RampedHalfAndHalfGenerator(factory, 3, 7);
 		
 		System.out.println("FullGenerator:");
@@ -27,16 +30,24 @@ public class TestMain {
 		
 		System.out.println("RampedGenerator:");
 		generateAndCount(ramped);
+		System.out.println("----------------");
+		
+		// generate and print a random individual
+		Node[] pop = ramped.generate(1);
+		System.out.println("Random individual: " + pop[0]);
+		CountVisitor v = new CountVisitor();
+		pop[0].accept(v);
+		System.out.println("Depth = " + v.getDepth() + ", size = " + v.getSize());
 	}
 	
 	private static void generateAndCount(PopulationGenerator generator) {
-		Node[] pop = generator.generate(500);
+		Node[] pop = generator.generate(POPSIZE);
 		int totDepth = 0;
 		int totSize = 0;
 		
-		int maxDepth = 0;
+		int maxDepth = -1;
 		int minDepth = Integer.MAX_VALUE;
-		int maxSize = 0;
+		int maxSize = -1;
 		int minSize = Integer.MAX_VALUE;
 		
 		for(Node n : pop) {
