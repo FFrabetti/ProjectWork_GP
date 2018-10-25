@@ -28,6 +28,7 @@ public class TournamentSelection extends SelectionMechanism {
 		
 		for(int i=0; i<size; i++) {
 			Node n = population[RandomGenerator.getInstance().nextInt(population.length)];
+			// TODO: just one evaluation for each individual -> store fitness for future uses
 			double fitness = getFitnessFunction().evalFitness(n);
 			
 			if(fitness > maxFitness) {

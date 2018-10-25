@@ -7,13 +7,14 @@ import model.Node;
 import model.NodeFactory;
 import visitor.CountVisitor;
 
-public class TestMain {
+public class TestInitialization {
 
 	public static final int POPSIZE = 500;
 	
 	public static void main(String[] args) {
 
 		// p = probability of choosing a terminal rather than a function
+		// (Node NodeFactory.getRandomNode())
 		NodeFactory factory = new MockFactory(0.5);
 		
 		PopulationGenerator full = new FullGenerator(factory, 3);

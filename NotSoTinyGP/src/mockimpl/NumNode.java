@@ -1,5 +1,6 @@
 package mockimpl;
 
+import model.Node;
 import model.TerminalNode;
 import visitor.NodeVisitor;
 
@@ -11,6 +12,10 @@ public class NumNode extends TerminalNode {
 		this.num = num;
 	}
 
+	public int getValue() {
+		return num;
+	}
+	
 	@Override
 	public void accept(NodeVisitor v) {
 		v.visit(this);
@@ -19,6 +24,11 @@ public class NumNode extends TerminalNode {
 	@Override
 	public String toString() {
 		return String.valueOf(num);
+	}
+
+	@Override
+	public Node clone() {
+		return new NumNode(getValue());
 	}
 	
 }
