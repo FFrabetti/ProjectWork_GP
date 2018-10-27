@@ -17,7 +17,7 @@ public class TestCrossover {
 		System.out.println("n1 = " + n1);
 		System.out.println("n2 = " + n2);
 		
-		Crossover xo = new SubtreeCrossover(); // 90% function nodes VS 10% terminal nodes
+		Crossover xo = new SubtreeCrossover(0.5); // 50%/50% function/terminal nodes
 		Crossover xof = new SubtreeCrossover(1); // function nodes as crossover points
 		Crossover xot = new SubtreeCrossover(0); // terminal nodes as crossover points
 		

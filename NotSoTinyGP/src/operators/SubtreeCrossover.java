@@ -31,12 +31,9 @@ public class SubtreeCrossover implements Crossover {
 
 	@Override
 	public Node apply(Node n1, Node n2) {
-		boolean swapFunction = RandomGenerator.getInstance().nextDouble() < pFunction;
-		Predicate<Node> predicate = n -> swapFunction ? n instanceof FunctionNode : n instanceof TerminalNode;
-		
 		Node offspring = n1.clone();
-		Node xoverPnt1 = selectXOverPoint(offspring, predicate);
-		Node xoverPnt2 = selectXOverPoint(n2, predicate).clone();
+		Node xoverPnt1 = selectXOverPoint(offspring);
+		Node xoverPnt2 = selectXOverPoint(n2).clone();
 		
 		if(xoverPnt1.isRoot()) {
 			xoverPnt2.makeRoot(); // (xoverPnt2.parent should already be set to null by clone())
@@ -51,18 +48,22 @@ public class SubtreeCrossover implements Crossover {
 		return offspring;
 	}
 
-	private Node selectXOverPoint(Node tree, Predicate<Node> p) {
+	private Node selectXOverPoint(Node tree) {
+		boolean swapFunction = RandomGenerator.getInstance().nextDouble() < pFunction;
+		Predicate<Node> predicate = n -> swapFunction ? n instanceof FunctionNode : n instanceof TerminalNode;
+		
 		List<Node> list = new LinkedList<>();
-		linearizeNodes(tree, list, p);
+		linearizeNodes(tree, list, predicate);
+		
 		return list.get(RandomGenerator.getInstance().nextInt(list.size()));
 	}
 
-	private void linearizeNodes(Node n, List<Node> list, Predicate<Node> p) {
-		if(p.test(n))
+	private void linearizeNodes(Node n, List<Node> list, Predicate<Node> predicate) {
+		if(predicate.test(n))
 			list.add(n);
 		
 		for(Node child : n.getChildren())
-			linearizeNodes(child, list, p);
+			linearizeNodes(child, list, predicate);
 	}
 
 	private int indexOf(Node n) {
