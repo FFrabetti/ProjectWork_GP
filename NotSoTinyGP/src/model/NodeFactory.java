@@ -7,5 +7,7 @@ public abstract class NodeFactory {
 	public abstract TerminalNode getRandomTerminal();
 	
 	public abstract FunctionNode getRandomFunction();
+
+	public abstract Node getRandomNode(int arity);
 	
 }

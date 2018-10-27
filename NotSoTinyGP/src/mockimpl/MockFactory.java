@@ -40,4 +40,9 @@ public class MockFactory extends NodeFactory {
 		return new OpNode();
 	}
 
+	@Override
+	public Node getRandomNode(int arity) {
+		return arity==0 ? getRandomTerminal() : getRandomFunction();
+	}
+
 }

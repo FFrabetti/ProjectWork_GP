@@ -55,7 +55,10 @@ public class SubtreeCrossover implements Crossover {
 		List<Node> list = new LinkedList<>();
 		linearizeNodes(tree, list, predicate);
 		
-		return list.get(RandomGenerator.getInstance().nextInt(list.size()));
+		if(list.size() == 0)
+			return tree;
+		else
+			return list.get(RandomGenerator.getInstance().nextInt(list.size()));
 	}
 
 	private void linearizeNodes(Node n, List<Node> list, Predicate<Node> predicate) {
