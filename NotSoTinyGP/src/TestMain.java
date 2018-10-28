@@ -1,3 +1,4 @@
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import evolution.TimeMachine;
@@ -17,8 +18,10 @@ import operators.SubtreeCrossover;
 import operators.SubtreeMutation;
 import selection.SelectionMechanism;
 import selection.TournamentSelection;
+import utils.DataExporter;
 import utils.PopulationAnalyser;
 import utils.RandomGenerator;
+import visitor.CountVisitor;
 
 public class TestMain {
 
@@ -73,6 +76,21 @@ public class TestMain {
 				Stream.of(tm.getCurrentGeneration()).max(
 						(n1, n2) -> (int)Math.signum(fitness.evalFitness(n1)-fitness.evalFitness(n2))));
 		
+		// https://wiki.openoffice.org/wiki/Documentation/How_Tos/Calc:_FREQUENCY_function
+		// http://wikieducator.org/OpenOffice/Calc_3/Histogram
+		Function<Node, String[]> funct = n -> {
+			CountVisitor v = new CountVisitor();
+			v.visit(n);
+			MockFitness f = new MockFitness();
+			
+			return new String[] {
+					String.valueOf(v.getDepth()),
+					String.valueOf(v.getSize()),
+					String.valueOf(f.evalFitness(n))};
+		};
+		String[] labels = new String[] {"depth","size","fitness"};
+		DataExporter.createCSV(initialpop, "initial.csv", funct, labels);
+		DataExporter.createCSV(tm.getCurrentGeneration(), "final.csv", funct, labels);
 	}
 
 }

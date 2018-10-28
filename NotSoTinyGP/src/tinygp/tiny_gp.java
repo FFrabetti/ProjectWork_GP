@@ -1,3 +1,4 @@
+package tinygp;
 
 /* 
  * Program:   tiny_gp.java
