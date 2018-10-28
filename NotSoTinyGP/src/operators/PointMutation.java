@@ -32,7 +32,7 @@ public class PointMutation implements Mutation {
 		
 		if(RandomGenerator.getInstance().nextDouble() < pNode) {
 			// debug
-			System.out.println("Mutating node " + n + " [" + n.getClass().getSimpleName() + "]");
+//			System.out.println("Mutating node " + n + " [" + n.getClass().getSimpleName() + "]");
 			n = factory.getRandomNode(n.getArity());
 		}
 		
