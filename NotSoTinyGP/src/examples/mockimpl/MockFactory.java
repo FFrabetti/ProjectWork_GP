@@ -1,4 +1,4 @@
-package mockimpl;
+package examples.mockimpl;
 
 import model.FunctionNode;
 import model.Node;

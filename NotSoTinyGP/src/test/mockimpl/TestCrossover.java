@@ -1,5 +1,6 @@
-import mockimpl.NumNode;
-import mockimpl.OpNode;
+package test.mockimpl;
+import examples.mockimpl.NumNode;
+import examples.mockimpl.OpNode;
 import model.Node;
 import operators.Crossover;
 import operators.SubtreeCrossover;

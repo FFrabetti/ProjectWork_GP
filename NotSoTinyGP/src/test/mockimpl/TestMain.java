@@ -1,12 +1,13 @@
+package test.mockimpl;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import evolution.TimeMachine;
+import examples.mockimpl.MockFactory;
+import examples.mockimpl.MockFitness;
 import fitness.FitnessFunction;
 import initialization.FullGenerator;
 import initialization.PopulationGenerator;
-import mockimpl.MockFactory;
-import mockimpl.MockFitness;
 import model.Node;
 import model.NodeFactory;
 import operators.Crossover;

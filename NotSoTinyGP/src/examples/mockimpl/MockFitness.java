@@ -1,4 +1,4 @@
-package mockimpl;
+package examples.mockimpl;
 
 import fitness.FitnessFunction;
 import model.Node;

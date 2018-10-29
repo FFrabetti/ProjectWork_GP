@@ -1,8 +1,9 @@
+package test.mockimpl;
+import examples.mockimpl.MockFactory;
+import examples.mockimpl.NumNode;
+import examples.mockimpl.OpNode;
 import initialization.GrowGenerator;
 import initialization.PopulationGenerator;
-import mockimpl.MockFactory;
-import mockimpl.NumNode;
-import mockimpl.OpNode;
 import model.Node;
 import model.NodeFactory;
 import operators.Mutation;
