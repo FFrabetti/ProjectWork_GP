@@ -1,14 +1,18 @@
 package visitor;
 
+import model.FunctionNode;
 import model.Node;
+import model.TerminalNode;
 
 public class CountVisitor implements NodeVisitor {
 
 	private int depth;
+	private int currDepth;
 	private int size;
 	
 	public CountVisitor() {
 		depth = 0;
+		currDepth = 0;
 		size = 0;
 	}
 	
@@ -21,22 +25,23 @@ public class CountVisitor implements NodeVisitor {
 	}
 
 	@Override
-	public void visit(Node node) {
-		recursiveVisit(node, 0);
+	public void visit(FunctionNode node) {
+		size++;		
+		currDepth++;
+
+		int localDepth = currDepth;
+		for(Node child : node.getChildren()) {
+			child.accept(this);
+			currDepth = localDepth;
+		}
 	}
 
-	private void recursiveVisit(Node node, int currDepth) {
+	@Override
+	public void visit(TerminalNode node) {
 		size++;
 		
-		Node[] children = node.getChildren();
-		if(children.length == 0) { // leaf node
-			if(currDepth > depth)
-				depth = currDepth;
-		}
-		else {
-			for(Node child : children)
-				recursiveVisit(child, currDepth+1);
-		}
+		if(currDepth > depth)
+			depth = currDepth;
 	}
 	
 }

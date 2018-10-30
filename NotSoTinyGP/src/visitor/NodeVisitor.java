@@ -1,9 +1,11 @@
 package visitor;
 
-import model.Node;
+import model.FunctionNode;
+import model.TerminalNode;
 
 public interface NodeVisitor {
 
-	public void visit(Node node);
+	public void visit(FunctionNode node);
+	public void visit(TerminalNode node);
 	
 }

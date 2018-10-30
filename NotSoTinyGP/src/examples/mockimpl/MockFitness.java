@@ -1,7 +1,9 @@
 package examples.mockimpl;
 
 import fitness.FitnessFunction;
+import model.FunctionNode;
 import model.Node;
+import model.TerminalNode;
 import visitor.NodeVisitor;
 
 /*
@@ -21,21 +23,23 @@ public class MockFitness implements FitnessFunction, NodeVisitor {
 		nrEven = 0;
 		nrLeaves = 0;
 		
-		visit(n);
+		n.accept(this);
 		
 		return nrEven/(float)nrLeaves; // ok: nrLeaves always != 0
 	}
 
 	@Override
-	public void visit(Node node) {
+	public void visit(FunctionNode node) {
+		for(Node child : node.getChildren())
+			child.accept(this);
+	}
+
+	@Override
+	public void visit(TerminalNode node) {
 		if(node instanceof NumNode) {
 			nrLeaves++;
 			if(((NumNode)node).getValue() % 2 == 0)
 				nrEven++;
-		}
-		else {
-			for(Node child : node.getChildren())
-				visit(child);
 		}
 	}
 	

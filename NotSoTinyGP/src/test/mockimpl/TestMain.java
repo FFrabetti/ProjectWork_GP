@@ -81,7 +81,7 @@ public class TestMain {
 		// http://wikieducator.org/OpenOffice/Calc_3/Histogram
 		Function<Node, String[]> funct = n -> {
 			CountVisitor v = new CountVisitor();
-			v.visit(n);
+			n.accept(v);
 			MockFitness f = new MockFitness();
 			
 			return new String[] {
