@@ -26,4 +26,9 @@ public class VarNode extends TerminalNode {
 		return name;
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }

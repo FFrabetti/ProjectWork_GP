@@ -19,27 +19,27 @@ public class TestVisitor {
 				new OpNode("/", new NumNode(5), new NumNode(0))
 		);
 		
-		// 2 - (x-1) = 3 - x
+		// 2 - (x-1) = 3 - x = -3 (x=6)
 		Node n2 = new OpNode("-", new NumNode(2), new OpNode("-", new VarNode("x"), new NumNode(1)));
 		
 		Map<String,Double> env = new HashMap<>();
 		env.put("x", 6.0);
 		
+		printVisitResults(n1, env);
+		System.out.println("----------------");
+		printVisitResults(n2, env);
+	}
+
+	private static void printVisitResults(Node n, Map<String,Double> env) {
+		System.out.println(n);
+		System.out.println("Environment: " + env);
+		
 		CountVisitor cv = new CountVisitor();
-		n1.accept(cv);
+		n.accept(cv);
 		System.out.println("size = " + cv.getSize() + ", depth = " + cv.getDepth());
 		
 		EvalVisitor ev = new EvalVisitor(env);
-		n1.accept(ev);
-		System.out.println("value = " + ev.getResult());
-		
-		
-		cv = new CountVisitor();
-		n2.accept(cv);
-		System.out.println("size = " + cv.getSize() + ", depth = " + cv.getDepth());
-		
-		ev = new EvalVisitor(env);
-		n2.accept(ev);
+		n.accept(ev);
 		System.out.println("value = " + ev.getResult());
 	}
 	

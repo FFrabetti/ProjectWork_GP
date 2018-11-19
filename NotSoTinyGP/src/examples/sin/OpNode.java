@@ -44,4 +44,10 @@ public class OpNode extends FunctionNode {
 		return getChildren()[1];
 	}
 	
+	@Override
+	public String toString() {
+		// prefix notation: no need for brackets
+		return op + " " + getLeft() + " " + getRight();
+	}
+	
 }

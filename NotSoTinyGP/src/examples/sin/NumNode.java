@@ -1,11 +1,15 @@
 package examples.sin;
 
+import java.text.DecimalFormat;
+
 import model.Node;
 import model.TerminalNode;
 import visitor.NodeVisitor;
 
 public class NumNode extends TerminalNode {
 
+	private static final DecimalFormat formatter = new DecimalFormat("0.##");
+	
 	private double value;
 	
 	public NumNode(double value) {
@@ -24,6 +28,11 @@ public class NumNode extends TerminalNode {
 
 	public double getValue() {
 		return value;
+	}
+	
+	@Override
+	public String toString() {
+		return formatter.format(value);
 	}
 	
 }
