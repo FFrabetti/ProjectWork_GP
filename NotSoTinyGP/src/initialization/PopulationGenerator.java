@@ -11,6 +11,7 @@ public abstract class PopulationGenerator {
 		this.nodeFactory = nodeFactory;
 	}
 	
+	// to be used by its subclasses
 	protected NodeFactory getFactory() {
 		return nodeFactory;
 	}
