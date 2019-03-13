@@ -10,14 +10,25 @@ import utils.RandomGenerator;
 public class TimeMachine {
 
 	private Operator[] operators;
-	private Node[] currentGeneration;
+	private Node[] currentGeneration; // support field for run()
 	
 	public TimeMachine(Operator[] operators) {
 		this.operators = operators;
 	}
 	
+	// it can be invoked manually, or automatically by run()
 	public Node[] nextGeneration(Node[] pop) {
 		Node[] generation = new Node[pop.length];
+		
+		// No negative tournament?
+		// In TinyGP the individuals of a generation are gradually replaced by the ones of the next,
+		// with negative tournaments used to select the "locally" worst individuals to be replaced.
+		// In this way, in case of crossover, an individual may have parents from its own generation.
+		
+		// Differently from TinyGP, we decide to keep the "past" and the "future" generations separated
+		
+		// no "eager" evaluation of the fitness of new individuals, unlike TinyGP
+		// (in order to keep fitness evaluation confined elsewhere)
 		
 		for(int i=0; i<generation.length; i++)
 			generation[i] = selectRandOp().apply(pop);
@@ -36,27 +47,34 @@ public class TimeMachine {
 		return currentGeneration;
 	}
 
-	public boolean run(Node[] initialPop, int maxGen, Predicate<Node[]> terminationCriterion, Consumer<Node[]> action) {
+	// see TinyGP evolve()
+	public int run(Node[] initialPop, int maxGen, Predicate<Node[]> terminationCriterion, Consumer<Node[]> action) {
 		currentGeneration = initialPop;
 
-		for(int i=0; i<maxGen; i++) {
+		int i; // generation index
+		// the conditions order is important: we want to check the last generation as well, before exiting
+		for(i=0; !isSuccess(terminationCriterion) && i<maxGen; i++) {
 			currentGeneration = nextGeneration(currentGeneration);
 			
 			if(action != null)
-				action.accept(currentGeneration);
-			
-			if(terminationCriterion.test(currentGeneration))
-				return true;
+				action.accept(currentGeneration); // operates via side-effects
 		}
 		
-		return false; // maxGen reached
+		return i;
 	}
 	
-	public boolean run(Node[] initialPop, int maxGen, Predicate<Node[]> terminationCriterion) {
+	// internally used by run() and to be used when run() == maxGen
+	// did it stop because maxGen was reached (fail) or because of a success in the last generation?
+	public boolean isSuccess(Predicate<Node[]> terminationCriterion) {
+		return terminationCriterion.test(currentGeneration);
+	}
+
+	public int run(Node[] initialPop, int maxGen, Predicate<Node[]> terminationCriterion) {
 		return run(initialPop, maxGen, terminationCriterion, null);
 	}
 	
-	public boolean run(Node[] initialPop, int maxGen) {
+	// it always returns maxGen
+	public int run(Node[] initialPop, int maxGen) {
 		return run(initialPop, maxGen, gen -> false);
 	}
 	

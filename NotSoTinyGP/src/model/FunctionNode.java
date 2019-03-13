@@ -4,7 +4,10 @@ public abstract class FunctionNode extends Node {
 
 	private Node[] children;
 	
-	public FunctionNode() { }
+	public FunctionNode() {
+		// to be used when you want to create an empty FunctionNode before its children
+		// NOTE: the check in getChildren() enforces consistency
+	}
 	
 	public FunctionNode(Node[] children) {
 		setChildren(children);
@@ -15,7 +18,7 @@ public abstract class FunctionNode extends Node {
 		return children != null ? children : EMPTY_NODES;
 	}
 	
-	// do NOT edit Node[] children without calling setChildren afterwards
+	// do NOT edit the children array (from getChildren()) without calling setChildren afterwards!
 	@Override
 	public void setChildren(Node[] children) {
 		if(children == null)
@@ -23,7 +26,8 @@ public abstract class FunctionNode extends Node {
 		if(children.length != getArity())
 			throw new IllegalArgumentException("children.length != arity");
 
-		this.children = children;		
+		this.children = children;
+		// bidirectional link
 		for(Node child : children)
 			child.setParent(this);
 	}
