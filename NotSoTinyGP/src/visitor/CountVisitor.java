@@ -1,19 +1,29 @@
 package visitor;
 
+import java.util.function.Predicate;
+
 import model.FunctionNode;
 import model.Node;
 import model.TerminalNode;
 
 public class CountVisitor implements NodeVisitor {
 
-	private int depth;
-	private int currDepth;
-	private int size;
+	private int depth;		// max depth of the tree
+	private int currDepth;	// keeps track of the "visiting depth"
+	private int size;		// total number of nodes
 	
-	public CountVisitor() {
+	// to filter the counting of size, e.g. based on the type of nodes
+	private Predicate<Node> predicate;
+	
+	public CountVisitor(Predicate<Node> predicate) {
+		this.predicate = predicate;
 		depth = 0;
 		currDepth = 0;
 		size = 0;
+	}
+	
+	public CountVisitor() {
+		this(null); // the default is count all (see count())
 	}
 	
 	public int getDepth() {
@@ -24,23 +34,28 @@ public class CountVisitor implements NodeVisitor {
 		return size;
 	}
 
+	private void count(Node node) {
+		if(predicate == null || predicate.test(node))
+			size++;
+	}
+	
 	@Override
 	public void visit(FunctionNode node) {
-		size++;		
-		currDepth++;
-
-		int localDepth = currDepth;
+		count(node);
+		
+		// it is the depth of its children
+		int localDepth = ++currDepth;
 		for(Node child : node.getChildren()) {
 			child.accept(this);
-			currDepth = localDepth;
+			currDepth = localDepth; // re-set current visiting depth
 		}
 	}
 
 	@Override
 	public void visit(TerminalNode node) {
-		size++;
+		count(node);
 		
-		if(currDepth > depth)
+		if(currDepth > depth) // new maximum found
 			depth = currDepth;
 	}
 	

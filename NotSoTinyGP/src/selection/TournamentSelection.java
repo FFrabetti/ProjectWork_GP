@@ -1,6 +1,5 @@
 package selection;
 
-import fitness.FitnessFunction;
 import model.Node;
 import utils.RandomGenerator;
 
@@ -14,7 +13,7 @@ import utils.RandomGenerator;
 
 public class TournamentSelection extends SelectionMechanism {
 
-	private int size;
+	private int size; // tournament size
 	
 	public TournamentSelection(FitnessFunction fitnessFct, int size) {
 		super(fitnessFct);
@@ -24,7 +23,7 @@ public class TournamentSelection extends SelectionMechanism {
 	@Override
 	public Node selectOne(Node[] population) {
 		double maxFitness = Double.MIN_VALUE;
-		Node bestNode = null;
+		Node best = null;
 		
 		for(int i=0; i<size; i++) {
 			Node n = population[RandomGenerator.getInstance().nextInt(population.length)];
@@ -33,11 +32,11 @@ public class TournamentSelection extends SelectionMechanism {
 			
 			if(fitness > maxFitness) {
 				maxFitness = fitness;
-				bestNode = n;
+				best = n;
 			}
 		}
 		
-		return bestNode;	
+		return best;	
 	}
 
 }

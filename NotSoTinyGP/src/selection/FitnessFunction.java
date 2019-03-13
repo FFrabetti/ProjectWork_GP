@@ -1,9 +1,9 @@
-package fitness;
+package selection;
 
 import model.Node;
 
 public interface FitnessFunction {
 
-	double evalFitness(Node n);
+	double evalFitness(Node node);
 
 }

@@ -1,11 +1,12 @@
 package utils;
 
-import fitness.FitnessFunction;
 import model.Node;
+import selection.FitnessFunction;
 import visitor.CountVisitor;
 
 public class PopulationAnalyser {
 
+	// depth and size of a population
 	public static void printStats(Node[] pop) {
 		int totDepth = 0;
 		int totSize = 0;
@@ -41,13 +42,13 @@ public class PopulationAnalyser {
 		System.out.println("Min size = " + minSize + ", Max size = " + maxSize);
 	}
 
-	public static void printFitness(Node[] pop, FitnessFunction fitnessF) {
+	public static void printFitness(Node[] pop, FitnessFunction fitnessFct) {
 		double maxFitness = -1;
 		Node bestIndividual = null;
 		double totFitness = 0;
 		
 		for (Node n : pop) {
-			double fitness = fitnessF.evalFitness(n);
+			double fitness = fitnessFct.evalFitness(n);
 			totFitness += fitness;
 			
 			if (fitness > maxFitness) {

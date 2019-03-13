@@ -12,7 +12,9 @@ import model.Node;
 
 public class DataExporter {
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> funct, String separator, String[] header) {
+	private static final String DEF_SEPARATOR = ";";
+
+	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String separator, String[] header) {
 		try(PrintWriter pw = new PrintWriter(new File(fileName))) {
 			Collector<CharSequence, ?, String> collector = Collectors.joining(separator);
 			
@@ -20,24 +22,24 @@ public class DataExporter {
 				pw.println(Stream.of(header).collect(collector));
 			
 			for(Node n : pop)
-				pw.println(Stream.of(funct.apply(n)).collect(collector));
+				pw.println(Stream.of(nodeToValues.apply(n)).collect(collector));
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 		
-		System.out.println("Created file: " + fileName);
+		System.out.println(DataExporter.class.getSimpleName() + ": created file \" " + fileName + " \" ");
 	}
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> funct, String separator) {
-		createCSV(pop, fileName, funct, separator, null);
+	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String separator) {
+		createCSV(pop, fileName, nodeToValues, separator, null);
 	}
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> funct) {
-		createCSV(pop, fileName, funct, ";");
+	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues) {
+		createCSV(pop, fileName, nodeToValues, DEF_SEPARATOR);
 	}
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> funct, String[] header) {
-		createCSV(pop, fileName, funct, ";", header);
+	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String[] header) {
+		createCSV(pop, fileName, nodeToValues, DEF_SEPARATOR, header);
 	}
 
 }

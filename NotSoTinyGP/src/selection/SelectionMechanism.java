@@ -1,6 +1,5 @@
 package selection;
 
-import fitness.FitnessFunction;
 import model.Node;
 
 public abstract class SelectionMechanism {

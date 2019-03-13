@@ -31,6 +31,7 @@ public class RandomGenerator {
 		return rnd.nextInt(bound);
 	}
 
+	// between 0.0 (inclusive) and 1.0 (exclusive). 
 	public double nextDouble() {
 		return rnd.nextDouble();
 	}
