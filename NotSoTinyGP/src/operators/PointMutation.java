@@ -27,24 +27,23 @@ public class PointMutation implements Mutation {
 	}
 
 	private Node visitAndMutate(Node n) {
-		Node[] children = n.getChildren();
-		int nChildren = children.length;
+		boolean mutation = RandomGenerator.getInstance().nextDouble() < pNode;
 		
-		if(RandomGenerator.getInstance().nextDouble() < pNode) {
-			// debug
-//			System.out.println("Mutating node " + n + " [" + n.getClass().getSimpleName() + "]");
-			n = factory.getRandomNode(n.getArity());
+		if(n.getArity() == 0) // terminal
+			return mutation ? factory.getRandomTerminal() : n;
+		else {
+			Node[] children = n.getChildren();
+			for (int i = 0; i < children.length; i++)
+				children[i] = visitAndMutate(children[i]);
+			// now children contains the "mutated" child-nodes
+			
+			if(mutation)
+				n = factory.getRandomNode(n.getArity());
+			// n is replaced by a new function node with the same arity
+			
+			n.setChildren(children); // fix parent-child bidirectional link
+			return n;
 		}
-		
-		// if the original node had children
-		if(nChildren > 0) {
-			Node[] newChildren = new Node[nChildren];
-			for(int i=0; i<nChildren; i++)
-				newChildren[i] = visitAndMutate(children[i]);
-			n.setChildren(newChildren);
-		}
-		
-		return n;
 	}
 
 }

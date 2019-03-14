@@ -1,13 +1,13 @@
 package operators;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import model.FunctionNode;
 import model.Node;
 import model.TerminalNode;
 import utils.RandomGenerator;
+import visitor.CountVisitor;
+import visitor.RandAccessVisitor;
 
 /*
  * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/24RecombinationandMutation.html
@@ -18,6 +18,8 @@ import utils.RandomGenerator;
 
 public class SubtreeCrossover implements Crossover {
 
+	private static final double DEF_PFUNCT = 0.9; // see class comment above
+	
 	// probability of choosing function nodes as crossover points
 	private double pFunction;
 	
@@ -26,7 +28,7 @@ public class SubtreeCrossover implements Crossover {
 	}
 
 	public SubtreeCrossover() {
-		this(0.9);
+		this(DEF_PFUNCT);
 	}
 
 	@Override
@@ -36,44 +38,40 @@ public class SubtreeCrossover implements Crossover {
 		Node xoverPnt2 = selectXOverPoint(n2).clone();
 		
 		if(xoverPnt1.isRoot()) {
-			xoverPnt2.makeRoot(); // (xoverPnt2.parent should already be set to null by clone())
+			xoverPnt2.makeRoot(); // xoverPnt2.parent should have already been set to null by clone()
 			return xoverPnt2;
 		}
 		
+		// if xoverPnt1 is not the root, it has a parent
 		Node parent = xoverPnt1.getParent();
 		Node[] children = parent.getChildren();
-		children[indexOf(xoverPnt1)] = xoverPnt2;
+		children[indexOf(xoverPnt1, children)] = xoverPnt2;
 		parent.setChildren(children); // necessary! see FunctionNode.setChildren()
 		
 		return offspring;
 	}
 
 	private Node selectXOverPoint(Node tree) {
-		boolean swapFunction = RandomGenerator.getInstance().nextDouble() < pFunction;
-		Predicate<Node> predicate = n -> swapFunction ? n instanceof FunctionNode : n instanceof TerminalNode;
+		boolean selectFctNode = RandomGenerator.getInstance().nextDouble() < pFunction;
+		Predicate<Node> predicate = n -> selectFctNode ? n instanceof FunctionNode : n instanceof TerminalNode;
 		
-		List<Node> list = new LinkedList<>();
-		linearizeNodes(tree, list, predicate);
+		CountVisitor countVisitor = new CountVisitor(predicate);
+		tree.accept(countVisitor);
 		
-		if(list.size() == 0)
-			return tree;
-		else
-			return list.get(RandomGenerator.getInstance().nextInt(list.size()));
+		if(countVisitor.getSize() == 0)
+			return tree; // no nodes of the selected type, use the root
+		else {
+			int index = RandomGenerator.getInstance().nextInt(countVisitor.getSize());
+			RandAccessVisitor rav = new RandAccessVisitor(index, predicate);
+			tree.accept(rav);
+			return rav.getNode().get();
+		}
 	}
 
-	private void linearizeNodes(Node n, List<Node> list, Predicate<Node> predicate) {
-		if(predicate.test(n))
-			list.add(n);
-		
-		for(Node child : n.getChildren())
-			linearizeNodes(child, list, predicate);
-	}
-
-	private int indexOf(Node n) {
-		Node[] children = n.getParent().getChildren();
+	private int indexOf(Node n, Node[] array) {
 		int i;
 		// != tests pointers equality
-		for(i=0; i<children.length && children[i]!=n; i++);
+		for(i=0; i<array.length && array[i]!=n; i++);
 		return i;
 	}
 

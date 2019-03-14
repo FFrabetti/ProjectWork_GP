@@ -4,11 +4,12 @@ import java.util.function.Function;
 
 import model.Node;
 
-public class DefaultOperator extends Operator {
+// utility class for rapid operator prototyping
+public class BaseOperator extends Operator {
 
 	private Function<Node[],Node> function;
 	
-	public DefaultOperator(double opRate, Function<Node[],Node> function) {
+	public BaseOperator(double opRate, Function<Node[],Node> function) {
 		super(opRate);
 		this.function = function;
 	}
