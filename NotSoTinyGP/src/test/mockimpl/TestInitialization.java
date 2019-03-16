@@ -14,13 +14,11 @@ public class TestInitialization {
 	public static final int POPSIZE = 500;
 	
 	public static void main(String[] args) {
-
-		// p = probability of choosing a terminal rather than a function
-		// (Node NodeFactory.getRandomNode())
+		// p = probability of choosing a terminal rather than a function (getRandomNode())
 		NodeFactory factory = new MockFactory(0.5);
 		
 		PopulationGenerator full = new FullGenerator(factory, 3);
-		PopulationGenerator grow = new GrowGenerator(factory, 3);
+		PopulationGenerator grow = new GrowGenerator(factory, 3, 5);
 		PopulationGenerator ramped = new RampedHalfAndHalfGenerator(factory, 3, 7);
 		
 		System.out.println("FullGenerator:");

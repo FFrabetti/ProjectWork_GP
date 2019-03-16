@@ -19,8 +19,8 @@ public abstract class NodeFactory {
 		return getRandomNode(tss/(double)tot);
 	}
 	
-	public Node getRandomNode(double termProb) {
-		return RandomGenerator.getInstance().nextDouble() < termProb ? getRandomTerminal() : getRandomFunction();
+	public Node getRandomNode(double pTerm) {
+		return RandomGenerator.getInstance().nextDouble() < pTerm ? getRandomTerminal() : getRandomFunction();
 	}
 	
 	public abstract Node getRandomNode(int arity);

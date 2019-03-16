@@ -37,6 +37,10 @@ public class SubtreeCrossover implements Crossover {
 		Node xoverPnt1 = selectXOverPoint(offspring);
 		Node xoverPnt2 = selectXOverPoint(n2).clone();
 		
+		// DEBUG
+//		System.out.println("xoPnt1 = " + xoverPnt1);
+//		System.out.println("xoPnt2 = " + xoverPnt2);
+		
 		if(xoverPnt1.isRoot()) {
 			xoverPnt2.makeRoot(); // xoverPnt2.parent should have already been set to null by clone()
 			return xoverPnt2;

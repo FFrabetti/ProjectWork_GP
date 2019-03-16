@@ -6,7 +6,9 @@ import visitor.NodeVisitor;
 
 public class OpNode extends FunctionNode {
 
-	public OpNode() { }
+	OpNode() {
+		// used by MockFactory (remember to call setChildren() right afterward)
+	}
 	
 	public OpNode(Node left, Node right) {
 		setChildren(new Node[] {left, right});
@@ -27,7 +29,7 @@ public class OpNode extends FunctionNode {
 
 	@Override
 	public void accept(NodeVisitor v) {
-		v.visit(this);
+		v.visit(this); // visit(FunctionNode)
 	}
 	
 	@Override
@@ -40,6 +42,7 @@ public class OpNode extends FunctionNode {
 	public Node clone() {
 		return new OpNode(getLeft().clone(), getRight().clone());
 //		result.setParent(this.getParent());
+		// the constructor calls FunctionNode.setChildren(), which does setParent() on each child
 	}
 	
 }

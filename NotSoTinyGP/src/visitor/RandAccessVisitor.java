@@ -31,25 +31,27 @@ public class RandAccessVisitor implements NodeVisitor {
 	}
 	
 	private void count(Node node) {
-		if(predicate == null || predicate.test(node))
+		if(predicate == null || predicate.test(node)) {
 			count++;
+			
+			if(isFound())
+				found = node;
+		}
 	}
 	
-	private boolean isFound(Node node) {
-		if(count == index)
-			found = node;
+	private boolean isFound() {
 		return count == index;
 	}
 	
 	@Override
 	public void visit(FunctionNode node) {
 		count(node);
-		if(isFound(node))
+		if(isFound())
 			return;
 		
 		for(Node child : node.getChildren()) {
 			child.accept(this);
-			if(isFound(child))
+			if(isFound())
 				return;
 		}
 	}

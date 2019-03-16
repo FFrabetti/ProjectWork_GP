@@ -8,7 +8,9 @@ import utils.RandomGenerator;
 
 public class MockFactory extends NodeFactory {
 
-	private double p;
+	private static final int N_TERMINALS = 10; // int [0, N_TERMINALS-1]
+	
+	private double pTerm;
 	
 	/*
 	 * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/22InitialisingthePopulation.html
@@ -19,30 +21,41 @@ public class MockFactory extends NodeFactory {
 	 * - significantly more functions than terminals -> behavior similar to the full method.
 	 */
 
-	public MockFactory(double p) {
-		this.p = p;
+	public MockFactory(double pTerm) {
+		this.pTerm = pTerm;
 		// on real cases p would be:
 		// p = |terminal_set|/(|terminal_set|+|function_set|)
+		// see NodeFactory.getRandomNode()
 	}
 	
 	@Override
 	public Node getRandomNode() {
-		return RandomGenerator.getInstance().nextDouble() < p ? getRandomTerminal() : getRandomFunction();
+		return super.getRandomNode(pTerm);
 	}
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		return new NumNode(RandomGenerator.getInstance().nextInt(10));
+		return new NumNode(RandomGenerator.getInstance().nextInt(N_TERMINALS));
 	}
 
 	@Override
 	public FunctionNode getRandomFunction() {
-		return new OpNode();
+		return new OpNode(); // use setChildren() afterwards
 	}
 
 	@Override
 	public Node getRandomNode(int arity) {
 		return arity==0 ? getRandomTerminal() : getRandomFunction();
+	}
+
+	@Override
+	public int getTerminalSetSize() {
+		return N_TERMINALS;
+	}
+
+	@Override
+	public int getFunctionSetSize() {
+		return 1; // just OpNode, a "mock" binary operator
 	}
 
 }

@@ -9,6 +9,13 @@ public abstract class Node implements Cloneable {
 	// the root has parent == null
 	private Node parent;
 	
+	Node() {
+		/* package protected constructor:
+		 * it prevents direct subclassing (except within the same package)
+		 * implementation-specific node classes have to extend either FunctionNode or TerminalNode!
+		 */
+	}
+	
 	// ATTENTION!
 	// be VERY careful with parent-children pointers consistency!
 	// method used by setChildren(Node[])

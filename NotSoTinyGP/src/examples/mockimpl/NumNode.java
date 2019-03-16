@@ -18,7 +18,7 @@ public class NumNode extends TerminalNode {
 	
 	@Override
 	public void accept(NodeVisitor v) {
-		v.visit(this);
+		v.visit(this); // visit(TerminalNode)
 	}
 	
 	@Override
