@@ -19,7 +19,7 @@ public class PlusNode extends OpNode {
 
 	@Override
 	public Node clone() {
-		return new PlusNode(getLeft(), getRight());
+		return new PlusNode(getLeft().clone(), getRight().clone());
 	}
 
 }

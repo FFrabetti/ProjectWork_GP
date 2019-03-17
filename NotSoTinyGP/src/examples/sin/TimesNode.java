@@ -19,7 +19,7 @@ public class TimesNode extends OpNode {
 
 	@Override
 	public Node clone() {
-		return new TimesNode(getLeft(), getRight());
+		return new TimesNode(getLeft().clone(), getRight().clone());
 	}
 
 }

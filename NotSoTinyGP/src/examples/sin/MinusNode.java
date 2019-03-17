@@ -19,7 +19,7 @@ public class MinusNode extends OpNode {
 
 	@Override
 	public Node clone() {
-		return new MinusNode(getLeft(), getRight());
+		return new MinusNode(getLeft().clone(), getRight().clone());
 	}
 
 }

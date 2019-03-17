@@ -1,6 +1,8 @@
 package examples.sin;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import model.Node;
 import model.TerminalNode;
@@ -9,7 +11,13 @@ import visitor.NodeVisitor;
 public class DoubleNode extends TerminalNode {
 
 	// nice toString()
-	private static final DecimalFormat formatter = new DecimalFormat("0.##");
+	public static final DecimalFormat formatter; // = new DecimalFormat("0.##");
+	
+	static {
+		NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+		formatter = (DecimalFormat)nf;
+		formatter.applyPattern("0.##");
+	}
 	
 	private double value;
 	

@@ -19,7 +19,7 @@ public class DivNode extends OpNode {
 
 	@Override
 	public Node clone() {
-		return new DivNode(getLeft(), getRight());
+		return new DivNode(getLeft().clone(), getRight().clone());
 	}
 
 }
