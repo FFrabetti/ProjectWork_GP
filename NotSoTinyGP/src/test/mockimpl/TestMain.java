@@ -40,7 +40,7 @@ public class TestMain {
 	// new:
 	private static final double MUTATION_PROB = 0.02;
 	// reproduction_prob = 1 - CROSSOVER_PROB - MUTATION_PROB
-	private static final double FITNESS_THRESHOLD = 1-0.05;
+	private static final double FITNESS_DELTA = 0.05; // ok if fitness >= maxFitness-DELTA
 	
 	public static void main(String[] args) {
 		RandomGenerator.getInstance().setSeed(SEED);
@@ -73,7 +73,7 @@ public class TestMain {
 
 		// termination: fitness of the best individual above a certain threshold
 		Predicate<Node[]> terminationCriterion = pop -> 
-				fitness.evalFitness(bestIndividual(pop, fitness))>=FITNESS_THRESHOLD;
+				fitness.evalFitness(bestIndividual(pop, fitness)) >= fitness.maxFitness()-FITNESS_DELTA;
 		
 		System.out.println("TimeMachine.run()");
 //		Consumer<Node[]> action = pop -> {

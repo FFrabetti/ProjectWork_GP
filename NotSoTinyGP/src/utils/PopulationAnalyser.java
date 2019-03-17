@@ -43,7 +43,7 @@ public class PopulationAnalyser {
 	}
 
 	public static void printFitness(Node[] pop, FitnessFunction fitnessFct) {
-		double maxFitness = -1;
+		double maxFitness = -Double.MAX_VALUE;
 		Node bestIndividual = null;
 		double totFitness = 0;
 		

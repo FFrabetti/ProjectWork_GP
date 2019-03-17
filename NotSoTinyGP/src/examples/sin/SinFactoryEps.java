@@ -10,29 +10,24 @@ import model.TerminalNode;
 import utils.RandomGenerator;
 
 /*
- * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B1OverviewofTinyGP.html
+ * The idea is to fill the terminal set with nrand "epsilon" fictitious terminals:
+ * every time one of them is selected, a new DoubleNode is generated (in [minrand,maxrand[).
+ * This overcomes the problem of imbalance between the number of variables (usually small)
+ * and the number or random constants (nrand) in the terminal set (usually high).
  * 
- * 1.	The terminal set includes a user-definable number of floating point variables (named X1 to XN).
- * 2.	The function set includes multiplication, protected division, subtraction and addition.
+ * nvar and nrand are still to be used to tune the probability of selecting a terminal
+ * of one type or the other, as all "epsilon" terminals are perfectly equivalent.
  */
 
-/*
- * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B2InputDataFilesforTinyGP.html
- * 
- * NVAR is an integer representing the number of variables the system should use
- * NRAND is an integer representing the number of random constants to be provided in the primitive set
- * MINRAND is a float representing the lower limit of the range used to generate random constants
- * MAXRAND is the corresponding upper limit
- * 
- * NRAND can be set to 0, in which case MINRAND and MAXRAND are ignored. 
- */
-
-public class SinFactory extends NodeFactory {
+public class SinFactoryEps extends NodeFactory {
 	
 	private RandomGenerator rand = RandomGenerator.getInstance();
 	
-	private int nTerminals; // utility field (== terminals.size())
-	private List<TerminalNode> terminals;
+	private int nTerminals;
+	private List<TerminalNode> vars;
+	
+	private double minrand;
+	private double maxrand;
 	
 	private static List<Class<? extends FunctionNode>> functions = new ArrayList<>();
 	
@@ -43,15 +38,14 @@ public class SinFactory extends NodeFactory {
 		functions.add(DivNode.class);
 	}
 	
-	public SinFactory(int nvar, int nrand, double minrand, double maxrand) {
+	public SinFactoryEps(int nvar, int nrand, double minrand, double maxrand) {
+		this.minrand = minrand;
+		this.maxrand = maxrand;
+		
 		nTerminals = nvar + nrand;
-		terminals = new ArrayList<>(nTerminals);
-		
+		vars = new ArrayList<>(nvar); // just variables!
 		for(int i=0; i<nvar; i++)
-			terminals.add(new VarNode("x"+i));
-		
-		for(int i=0; i<nrand; i++)
-			terminals.add(new DoubleNode(rand.nextDouble()*(maxrand-minrand)+minrand));
+			vars.add(new VarNode("x"+i));
 	}
 
 	@Override
@@ -64,9 +58,14 @@ public class SinFactory extends NodeFactory {
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		return (TerminalNode) terminals.get(rand.nextInt(nTerminals)).clone();
+		int index = rand.nextInt(nTerminals);
+		return index<vars.size() ? (TerminalNode)vars.get(index).clone() : getRandomDouble();
 	}
 
+	private DoubleNode getRandomDouble() {
+		return new DoubleNode(rand.nextDouble()*(maxrand-minrand)+minrand);
+	}
+	
 	@Override
 	public FunctionNode getRandomFunction() {
 		try {

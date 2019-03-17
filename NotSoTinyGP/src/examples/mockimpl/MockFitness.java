@@ -61,5 +61,10 @@ public class MockFitness implements FitnessFunction, NodeVisitor {
 				nrEven++;
 		}
 	}
+
+	@Override
+	public double maxFitness() {
+		return 1;
+	}
 	
 }

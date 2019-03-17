@@ -4,36 +4,14 @@ import model.FunctionNode;
 import model.Node;
 import visitor.NodeVisitor;
 
-public class OpNode extends FunctionNode {
-
-	private String op;
+public abstract class OpNode extends FunctionNode {
 	
-	public OpNode(String op, Node left, Node right) {
+	public OpNode(Node left, Node right) {
 		super(new Node[] {left, right});
-		this.op = op;
 	}
 
-	public OpNode(String op) {
-		this.op = op;
-	}
-	
-	@Override
-	public Node clone() {
-		return new OpNode(op, getLeft().clone(), getRight().clone());
-	}
-
-	@Override
-	public int getArity() {
-		return 2;
-	}
-
-	@Override
-	public void accept(NodeVisitor v) {
-		v.visit(this);
-	}
-
-	public String getOperator() {
-		return op;
+	OpNode() {
+		// used by SinFactory (remember to call setChildren() right afterward)
 	}
 	
 	public Node getLeft() {
@@ -43,11 +21,28 @@ public class OpNode extends FunctionNode {
 	public Node getRight() {
 		return getChildren()[1];
 	}
+
+	public abstract String getOperator();
 	
+//	@Override
+//	public Node clone() {
+//		return new OpNode(op, getLeft().clone(), getRight().clone());
+//	}
+
+	@Override
+	public int getArity() {
+		return 2;
+	}
+
+	@Override
+	public void accept(NodeVisitor v) {
+		v.visit(this); // visit(FunctionNode)
+	}
+
 	@Override
 	public String toString() {
 		// prefix notation: no need for brackets
-		return op + " " + getLeft() + " " + getRight();
+		return getOperator() + " " + getLeft() + " " + getRight();
 	}
 	
 }

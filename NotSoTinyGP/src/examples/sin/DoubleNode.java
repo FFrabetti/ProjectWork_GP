@@ -6,28 +6,29 @@ import model.Node;
 import model.TerminalNode;
 import visitor.NodeVisitor;
 
-public class NumNode extends TerminalNode {
+public class DoubleNode extends TerminalNode {
 
+	// nice toString()
 	private static final DecimalFormat formatter = new DecimalFormat("0.##");
 	
 	private double value;
 	
-	public NumNode(double value) {
+	public DoubleNode(double value) {
 		this.value = value;
-	}
-
-	@Override
-	public Node clone() {
-		return new NumNode(value);
-	}
-
-	@Override
-	public void accept(NodeVisitor v) {
-		v.visit(this);
 	}
 
 	public double getValue() {
 		return value;
+	}
+	
+	@Override
+	public Node clone() {
+		return new DoubleNode(value);
+	}
+
+	@Override
+	public void accept(NodeVisitor v) {
+		v.visit(this); // visit(TerminalNode)
 	}
 	
 	@Override

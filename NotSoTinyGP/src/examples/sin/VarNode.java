@@ -12,6 +12,10 @@ public class VarNode extends TerminalNode {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+	
 	@Override
 	public Node clone() {
 		return new VarNode(name);
@@ -19,11 +23,7 @@ public class VarNode extends TerminalNode {
 
 	@Override
 	public void accept(NodeVisitor v) {
-		v.visit(this);
-	}
-
-	public String getName() {
-		return name;
+		v.visit(this); // visit(TerminalNode)
 	}
 	
 	@Override
