@@ -22,7 +22,7 @@ public class TournamentSelection extends SelectionMechanism {
 
 	@Override
 	public Node selectOne(Node[] population) {
-		double maxFitness = Double.MIN_VALUE;
+		double maxFitness = -Double.MAX_VALUE;
 		Node best = null;
 		
 		for(int i=0; i<size; i++) {
