@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.stream.DoubleStream;
 
 import examples.sin.DoubleNode;
-import examples.sin.FileFitnessCases;
+import examples.sin.FitnessCases;
 import examples.sin.InputFileParser;
 import examples.sin.SinFactory;
 import initialization.GrowGenerator;
@@ -29,7 +29,7 @@ public class TestFactoryAndFitness {
 				parser.getNrand(),
 				parser.getMinrand(),
 				parser.getMaxrand());
-		FitnessFunction fitnessFct = new FileFitnessCases(parser.getFitnessCases());
+		FitnessFunction fitnessFct = new FitnessCases(parser.getFitnessCases());
 		
 		PopulationGenerator generator = new GrowGenerator(factory, maxDepth);
 		Node[] pop = generator.generate(popSize);

@@ -13,11 +13,11 @@ import selection.FitnessFunction;
  * 		the actual program output and the desired output for each fitness case.
  */
 
-public class FileFitnessCases implements FitnessFunction {
+public class FitnessCases implements FitnessFunction {
 
 	private double[][] fitnessCases;
 	
-	public FileFitnessCases(double[][] fitnessCases) {
+	public FitnessCases(double[][] fitnessCases) {
 		this.fitnessCases = fitnessCases;
 	}
 	
