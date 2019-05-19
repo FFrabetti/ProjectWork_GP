@@ -1,0 +1,416 @@
+\documentclass{../llncs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% package sillabazione italiana e uso lettere accentate
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+%\usepackage[italian]{babel}
+\usepackage[english,italian]{babel} % documento in italiano con alcune parti in inglese
+\usepackage[T1]{fontenc}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Per singole parole o brevi frasi in lingua straniera è disponibile il comando
+% \foreignlanguage{lingua}{testo}
+% 
+% Per porzioni di testo in lingua più consistenti è disponibile l’ambiente
+% \begin{otherlanguage*}{lingua}
+% ...
+% \end{otherlanguage*}
+
+% per gli elenchi
+\usepackage{enumitem}
+
+% per la bibliografia
+\usepackage[
+	autostyle,italian=guillemets
+	% ... altre opzioni
+]{csquotes}
+
+\usepackage[
+	% ... opzioni
+	backend=biber
+]{biblatex}
+
+%\addbibresource{../bibliografia.bib}
+
+\defbibfilter{papers}{
+  type=article or
+  type=inproceedings
+}
+
+\defbibheading{principali}{\subsection*{Bibliografia essenziale}}
+\defbibheading{web}{\subsection*{Fonti e materiali on-line}}
+\defbibheading{integrative}{\subsection*{Letture di approfondimento}}
+
+% ambiente per le citazioni, in alternativa a quelli standard (quote e quotation)
+\usepackage{quoting}
+\quotingsetup{font=small}
+
+% per usare \caption* per didascalie senza intestazione e numero
+\usepackage{caption}
+
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+\newcommand{\xsource}[1]{\scriptsize{\textbf{Source:} {#1}}}
+\newcommand{\source}[1]{\caption*{\xsource{#1}} }
+\newcommand{\rsource}[1]{\vspace{-10pt} \caption*{\hfill \xsource{#1}} }
+\newcommand{\tsource}[1]{\vspace{-10pt} \caption*{\xsource{#1}} }
+
+% per le unità di misura
+\usepackage[output-decimal-marker={,}]{siunitx}
+
+\usepackage{xcolor}
+\definecolor{darkgreen}{HTML}{007700}
+
+% per il valore assoluto
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+\lstset{
+	basicstyle=\small\ttfamily,
+	columns=fullflexible,
+	keywordstyle=\color{violet}\bfseries,
+	commentstyle=\color{darkgreen},
+	breaklines=true,	 			% sets automatic line breaking
+	captionpos=b,					% sets the caption-position to bottom
+	stringstyle=\color{blue},     	% string literal style
+	showstringspaces=false, 		% no special string spaces
+	caption={\lstname},
+	% title=\lstname,               % show the filename of files included with \lstinputlisting;
+	numbers=left,
+	numberstyle=\tiny,
+	stepnumber=1,
+	numbersep=5pt,
+	frame=shadowbox
+	% , float=*
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{url}
+\usepackage{xspace}
+\usepackage{color}
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{../manifest}
+
+\makeatother
+
+% https://en.wikibooks.org/wiki/LaTeX/Hyperlinks
+% LaTeXimpaziente: "Il pacchetto hyperref, che di regola va caricato per ultimo, crea i collegamenti ipertestualivall’interno del documento, rendendo cliccabili i riferimenti incrociati"
+\usepackage{hyperref}
+
+%%%%%%%
+ \newif\ifpdf
+ \ifx\pdfoutput\undefined
+ \pdffalse % we are not running PDFLaTeX
+ \else
+ \pdfoutput=1 % we are running PDFLaTeX
+ \pdftrue
+ \fi
+%%%%%%%
+ \ifpdf
+ \usepackage[pdftex]{graphicx}
+ \else
+ \usepackage{graphicx}
+ \fi
+%%%%%%%%%%%%%%%
+ \ifpdf
+ \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+ \else
+ \DeclareGraphicsExtensions{.eps, .jpg}
+ \fi
+%%%%%%%%%%%%%%%
+
+\newcommand{\java}{\textsf{Java}}
+\newcommand{\android}{\texttt{Android}}
+\newcommand{\dsl}{\texttt{DSL}}
+\newcommand{\jazz}{\texttt{Jazz}}
+\newcommand{\rtc}{\texttt{RTC}}
+\newcommand{\ide}{\texttt{Contact-ide}}
+\newcommand{\xtext}{\texttt{XText}}
+\newcommand{\xpand}{\texttt{Xpand}}
+\newcommand{\xtend}{\texttt{Xtend}}
+\newcommand{\pojo}{\texttt{POJO}}
+\newcommand{\junit}{\texttt{JUnit}}
+
+\newcommand{\action}[1]{\texttt{#1}\xspace}
+% \newcommand{\codescript}[1]{{\scriptsize{\texttt{#1}}}\xspace}
+\newcommand{\codescript}[1]{{\mbox{\small{\texttt{#1}}}}\xspace}
+\newcommand{\code}[1]{{\color{blue}\small{\texttt{#1}}}}
+\newcommand{\fname}[1]{{\small{\color{magenta}\texttt{#1}}}}
+\newcommand{\node}{\textsf{NodeJs}}
+\newcommand{\qa}{\textsf{\textit{QActor}}\xspace}
+
+% Cross-referencing
+\newcommand{\labelsec}[1]{\label{sec:#1}}
+\newcommand{\xs}[1]{\sectionname~\ref{sec:#1}}
+\newcommand{\xsp}[1]{\sectionname~\ref{sec:#1} \onpagename~\pageref{sec:#1}}
+\newcommand{\labelssec}[1]{\label{ssec:#1}}
+\newcommand{\xss}[1]{\subsectionname~\ref{ssec:#1}}
+\newcommand{\xssp}[1]{\subsectionname~\ref{ssec:#1} \onpagename~\pageref{ssec:#1}}
+\newcommand{\labelsssec}[1]{\label{sssec:#1}}
+\newcommand{\xsss}[1]{\subsectionname~\ref{sssec:#1}}
+\newcommand{\xsssp}[1]{\subsectionname~\ref{sssec:#1} \onpagename~\pageref{sssec:#1}}
+\newcommand{\labelfig}[1]{\label{fig:#1}}
+\newcommand{\xf}[1]{\figurename~\ref{fig:#1}}
+\newcommand{\xfp}[1]{\figurename~\ref{fig:#1} \onpagename~\pageref{fig:#1}}
+\newcommand{\labeltab}[1]{\label{tab:#1}}
+\newcommand{\xt}[1]{\tablename~\ref{tab:#1}}
+\newcommand{\xtp}[1]{\tablename~\ref{tab:#1} \onpagename~\pageref{tab:#1}}
+% Category Names
+\newcommand{\sectionname}{Section}
+\newcommand{\subsectionname}{Subsection}
+\newcommand{\sectionsname}{Sections}
+\newcommand{\subsectionsname}{Subsections}
+\newcommand{\secname}{\sectionname}
+\newcommand{\ssecname}{\subsectionname}
+\newcommand{\secsname}{\sectionsname}
+\newcommand{\ssecsname}{\subsectionsname}
+\newcommand{\onpagename}{on page}
+
+% What’s wrong with \bf, \it, etc.? --> https://texfaq.org/FAQ-2letterfontcmd
+% \newcommand{\todo}[1]{\bf{TODO:}\emph{#1}}
+\newcommand{\todo}[1]{\vspace{8px} \textbf{TODO:} \emph{#1}\\ \vspace{8px}}
+\newcommand{\eng}[1]{\foreignlanguage{english}{\emph{#1}}}
+\newcommand{\engl}[1]{\emph{#1}}
+% \textit{ }
+
+\newcommand{\xauth}{Filippo Frabetti}
+\newcommand{\xemail}{filippo.frabetti@studio.unibo.it}
+\newcommand{\xunibo}{Dipartimento di Informatica - Scienza e Ingegneria (DISI)\\Università di Bologna} % Alma Mater Studiorum
+\newcommand{\xcourse}{Fondamenti di Intelligenza Artificiale M -- A.A. 2018/19}
+\newcommand{\xtitle}{Attività progettuale su Genetic Programming}
+
+
+% table of contents fino a subsubsections
+\setcounter{tocdepth}{3}
+
+% Mette i numeri di pagina nel piede, lasciando vuota la testatina
+\pagestyle{plain}
+
+% %%%%%%%%%%%%%%%% BEGIN DOCUMENT %%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{\xtitle}
+
+\author{\xauth}
+
+\institute{
+  \xunibo
+%  \email{\xemail}
+}
+
+% no titolo+autore nell'indice
+{\def\addcontentsline#1#2#3{}\maketitle}
+%\maketitle
+
+\vspace{16px}
+\begin{center}
+\textbf{\xcourse}
+\end{center}
+
+% evita le righe eccessivamente lunghe aumentando la spaziatura tra le parole
+% Il comando \fussy ripristina le impostazioni predefinite 
+\sloppy
+
+% indice sezioni
+\tableofcontents
+\newpage
+
+%===========================================================================
+\section{Introduzione}
+\labelsec{overview}
+
+Lo scopo di questa attività progettuale è quello di approfondire le tematiche relative all'utilizzo di tecniche di Genetic Programming per evolvere, in modo automatico, euristiche che possano guidare la ricerca nello spazio degli stati di un gioco a conoscenza completa, nella fattispecie il cosiddetto Gioco del Mulino o Schiera (\textit{Nine Men's Morris}).\\
+
+Una prima parte dell'attività è dedicata all'investigazione dell'algoritmo di GP in generale, partendo dall'analisi di un'implementazione funzionante di questi (\emph{TinyGP}) per poi costruire una propria implementazione in versione Object-Oriented, in linguaggio Java.
+
+Particolarmente rilevante a tal fine è la possibilità di effettuare semplici test di comparazione tra le due versioni dell'algoritmo, così da avere una forma di conferma empirica della correttezza dell'implementazione creata, conferma che sarebbe altrimenti difficile da ottenere data l'elevata componente stocastica presente nei processi di GP.\\
+
+La seconda parte riguarda invece l'applicazione dell'algoritmo al Gioco del Mulino, con l'obiettivo di evolvere euristiche significative non basate su alcuna conoscenza strategica umana sul dominio del problema, e quindi prive di eventuali bias cognitivi. In particolare, speriamo di ottenere formule che diano, con buona approssimazione, un'indicazione sulla bontà di una mossa/di un dato stato della scacchiera a partire da una serie di dati in ingresso sullo stato stesso.
+
+L'idea di fondo non è tanto quella di sviluppare giocatori particolarmente competitivi e intelligenti, quanto quella di dedurre quali siano le variabili che maggiormente influenzano lo stato della partita a seconda di dove queste compaiono all'interno delle euristiche migliori trovate. In linea di massima infatti, più una variabile si trova vicina alla radice, maggiore sarà il suo peso sul risultato finale e quindi sulla valutazione dello stato della partita. Viceversa, le variabili più ``periferiche'' avranno, relativamente, un'importanza minore.
+
+\section{TinyGP}
+\labelsec{tinygp}
+
+\emph{TinyGP} è l'implementazione dell'algoritmo di Programmazione Genetica fornita nell'appendice B di \footnote{\url{http://www.gp-field-guide.org.uk/}} e originariamente sviluppata nell'ambito dell'omonima competizione tenutasi all'interno della Genetic and Evolutionary Computation Conference (GECCO) del 2004.
+
+Per quanto sia soltanto uno dei tanti sistemi di Genetic Programming disponibili in rete, il suo pregio risiede nell'estrema compattezza e semplicità e nella facilità di utilizzo, prestandosi quindi come un buon punto di partenza per capire le meccaniche di base dell'algoritmo e per effettuare alcuni semplici esperimenti.\\
+
+Per essere più precisi, l'implementazione pubblicata è la versione in Java di una precedente scritta in C per motivi di performance e di dimensioni dell'eseguibile risultante. Sebbene quindi formalmente si tratti di un programma Java, lo stile utilizzato è puramente procedurale e \emph{C-like}.
+
+\subsection{Caratteristiche generali}
+\begin{itemize}
+\item Simboli terminali: un numero configurabile di variabili ($x_1$, \ldots, $x_n$) e di costanti casuali
+\item Simboli di funzione: addizione, sottrazione, moltiplicazione e divisione protetta (tutte funzioni binarie)
+\item Per la costituzione della popolazione iniziale viene utilizzato il metodo \emph{grow} con profondità massima configurabile
+\item Il sistema è \emph{steady state}: il numero di individui per generazione è configurabile, ma costante; una generazione è considerata conclusa solo dopo che sono state effettuate tante operazioni genetiche quanti sono gli individui
+\item La selezione avviene tramite \emph{tournament selection}, mentre tornei ``negativi'' vengono utilizzati per la scelta degli individui da sostituire
+\item Operatori: \emph{subtree crossover} (con probabilità uniforme di selezionare un qualsiasi nodo) e \emph{point mutation}
+\item Terminazione: ad ogni generazione, se la fitness del programma migliore è inferiore a una certa soglia ($10^{-5}$), l'algoritmo termina con successo, altrimenti termina con fallimento una volta raggiunto il numero massimo di generazioni impostato
+\end{itemize}
+
+\subsubsection{Fitness}
+La fitness è data dall'opposto (``meno'') della somma delle differenze, in valore assoluto, tra l'output attuale e quello desiderato per ogni \emph{fitness case}.
+I \emph{fitness case} vengono letti da file, uno per riga, e sono costituiti dall'assegnamento di un valore per ogni variabile e di un valore atteso per il risultato.
+
+L'algoritmo di GP mira a massimizzare la funzione di fitness, ovvero a minimizzare l'errore totale tra i risultati attesi e quelli attuali.
+
+\subsection{Parametri di configurazione e interfacce di utilizzo}
+Da linea di comando è possibile passare un seed opzionale per il random number generator (se assente viene generato dal sistema) e il nome del file che contiene alcuni parametri dell'algoritmo e i \emph{fitness case}; se omesso viene ricercato un file chiamato ``problem.dat'' nel direttorio corrente.\\
+
+\noindent La struttura del file di input è la seguente:
+\begin{lstlisting}[caption={Struttura del file di input}]
+NVAR NRAND MINRAND MAXRAND NFITCASES
+V11 V12 ... V1n TARGET1
+...
+Vk1 Vk2 ... Vkn TARGETk
+\end{lstlisting}
+dove:
+\begin{itemize}
+\setlength\itemsep{0.1em}
+\item[-] \texttt{NVAR} è il numero di variabili ($=n$, $x_1$ \ldots $x_n$)
+\item[-] \texttt{NRAND} è il numero di costanti casuali da inserire come simboli terminali
+\item[-] \texttt{MINRAND} e \texttt{MAXRAND} determinano il range da utilizzare per la generazione delle costanti casuali (\texttt{double})
+\item[-] \texttt{NFITCASES} è il numero di \emph{fitness case} e di righe in aggiunta alla prima ($=k$)
+\item[-] \texttt{Vij} è il valore da assegnare alla variabile $x_j$ ($j = 1, \ldots, n$) alla valutazione del \emph{fitness case} $i$ ($i = 1, \ldots, k$)
+\item[-] \texttt{TARGETi} è il risultato atteso per il \emph{fitness case} $i$
+\end{itemize}
+
+\noindent Parametri di configurazione staticamente definiti all'interno del codice:
+\begin{itemize}
+\setlength\itemsep{0.1em}
+\item \texttt{MAX{\_}LEN}: la dimensione massima che un programma può avere
+\item \texttt{POPSIZE}: il numero di individui in ogni generazione
+\item \texttt{DEPTH}: la profondità massima degli individui nella popolazione iniziale
+\item \texttt{GENERATIONS}: numero massimo di generazioni
+\item \texttt{CROSSOVER{\_}PROB}: probabilità di utilizzare l'operatore crossover (in alternativa alla mutazione)
+\item \texttt{PMUT{\_}PER{\_}NODE}: nel caso di mutazione, la probabilità che un singolo nodo venga mutato
+\item \texttt{TSIZE}: numero di individui selezionati per ogni torneo
+\end{itemize}
+
+\noindent Ad ogni generazione vengono calcolate e stampate le seguenti statistiche:
+\begin{itemize}
+\setlength\itemsep{0.1em}
+\item Numero della generazione corrente
+\item Fitness e dimensione medie della popolazione
+\item Individuo migliore e la sua fitness
+% TODO: l'individuo migliore ad ora trovato, eventualmente anche da generazioni precedenti
+\end{itemize}
+
+\subsection{Rappresentazione interna}
+La rappresentazione interna utilizzata per gli individui/programmi non è altro che la linearizzazione della classica struttura ad albero tramite la notazione prefissa, dove ogni operatore è semplicemente seguito dai suoi operandi.
+Ad esempio, la seguente espressione in notazione infissa:
+\[
+(3+4)*5
+\]
+può essere rappresentata senza ambiguità in notazione prefissa come:
+\[
+* + 3\:4\:5
+\]
+Mentre sotto forma di albero si avrebbe un nodo radice (*) che ha come figlio sinistro la somma di 3 e 4 (ovvero un sotto-albero $+$, con figli 3 e 4) e come figlio destro 5.\\
+
+Grazie alla notazione prefissa è possibile fare a meno di parentesi e di regole di priorità degli operatori, ovvero non è nemmeno necessario mantenere, come sarebbe necessario fare nel caso di una rappresentazione ad albero, la distinzione dei diversi livelli di priorità. L'espressione $2+3*5$ infatti, pur non necessitando di parentesi, sotto forma di albero dovrebbe conservare in qualche modo la semantica di valutazione \textit{``prima moltiplicazioni e divisioni''}, generando un albero a due livelli ben diverso da quello prodotto da $(2+3)*5$.\\
+
+La notazione prefissa ha quindi il vantaggio di poter mantenere in memoria delle semplici sequenze di simboli, terminali o di funzione, riducendo ogni individuo ad un semplice array. Come vedremo, la scelta è di semplificare il più possibile le strutture dati di supporto, retaggio della versione in C, facendo uso di array di byte.
+
+Naturalmente, appositi meccanismi vengono messi di conseguenza in atto per effettuare le operazioni di crossover e di mutazione sugli array, così come la generazione di individui (grow) e la loro valutazione come espressioni.
+
+\section{Dettagli dell'implementazione}
+\subsection{Simboli terminali e di funzione}
+Come precedentemente accennato, la codifica utilizzata prevede di memorizzare ogni individuo/espressione come un array di byte (\texttt{char[]}). Per fare ciò occorre mappare tutti i simboli, terminali e di funzione, in un singolo byte ciascuno, per un totale di 256 possibili simboli.
+
+L'idea adottata è quella di utilizzare gli indici da 0 a 255 al posto dei \emph{valori} (nel caso delle costanti numeriche) e dei \emph{simboli} (nel caso delle variabili e degli operatori di funzione), così da effettuare tutte le operazioni genetiche sugli indici e ricorrendo ai valori riferiti quasi esclusivamente al momento della valutazione della fitness.\\
+
+Il semplice individuo dell'esempio precedente, $* + 3\:4\:5$, in questa notazione basata su indici potrebbe quindi diventare qualcosa del tipo\footnote{043, 044 e 045 sono stati scritti con lo 0 davanti unicamente per evidenziare il fatto che non si tratta dei numeri 43, 44 e 45, ma di \emph{indici} che identificano dei valori numerici (in questo caso 3, 4 e 5). In Java la differenza è ancora più netta, in quanto questi ultimi sarebbero valori a virgola mobile a doppia precisione (\texttt{double}).}:
+\[
+112\;110\;043\;044\;045
+\]
+L'implementazione impiega, per scelta arbitraria, solamente i primi 114 indici sui 256 teoricamente disponibili. Il numero massimo di variabili e di costanti numeriche -- ovvero il numero massimo di simboli terminali -- è quindi vincolato a 110 ($=114-4$, dove 4 sono le funzioni disponibili)\footnote{In effetti, per una probabile svista, il massimo numero ammesso risulta essere 109.}.\\
+
+All'esecuzione del programma vengono generati in ogni caso, indipendentemente dal numero di variabili e di costanti impostato, 110 valori casuali nel range specificato da \texttt{MINRAND} e \texttt{MAXRAND}, per essere successivamente puntati dai relativi indici.
+
+Da notare come di questi 110, solamente quelli con indice compreso tra \texttt{NVAR} e \texttt{NVAR+NRAND-1} saranno realmente utilizzati.
+
+\subsection{Popolazione di partenza}
+La prima generazione viene costruita tramite il metodo \emph{grow}, ovvero introducendo una probabilità del 50\% di scegliere un simbolo terminale ad ogni ricorsione effettuata durante la ``crescita'', prima del raggiungimento della profondità massima impostata (\texttt{DEPTH}).
+
+Nel raro caso che un individuo raggiunga complessivamente la dimensione massima (\texttt{MAX{\_}LEN}) in termini di numero di nodi/simboli, questo viene scartato e ri-generato da capo.\\
+
+La fitness viene immediatamente valutata per tutti i nuovi individui e memorizzata per impieghi futuri.
+
+\subsection{Valutazione della fitness}
+Per quanto riguarda la fitness, per ogni \emph{fitness case} vengono copiati i valori da assegnare alle variabili nelle prime posizioni della tabella di conversione tra indici e costanti generate casualmente. In questo modo, all'esecuzione del programma il valutatore può ``dimenticarsi'' di quali indici rappresentino delle variabili e quali delle costanti, limitandosi a dover distinguere i soli indici che puntano a simboli di funzione.
+
+Queste vengono poi eseguite dopo aver ricorsivamente prelevato dell'array, scorso tramite un suo \emph{program counter}, i relativi operandi.\\
+
+Una menzione particolare merita di essere fatta per la divisione protetta ($/_p$), implementata nel seguente modo:
+\[
+num \: /_p \: den =
+\begin{cases}
+num & \text{se $\abs{den}\le0.001$} \\
+num/den & \text{altrimenti}
+\end{cases}
+\]
+
+\subsection{Ricombinazione e sostituzione}
+Come menzionato nella sezione precedente, per mantenere le generazioni di dimensione costante, ogni nuovo individuo generato viene inserito al posto di un altro già presente, selezionato tramite un torneo negativo. Non vi è quindi una netta separazione tra generazioni successive, nel senso che un individuo appena creato ed inserito nella popolazione all'interno della generazione $i-esima$ potrebbe essere scelto indistintamente come possibile `genitore' di un altro individuo appartenente alla stessa generazione $i$.
+
+L'unica discriminante tra un individuo creato in una generazione piuttosto che in un'altra è quindi il solo conteggio delle operazioni genetiche effettuate, che si resetta ogni volta che si raggiunge il numero impostato come dimensione della popolazione.\\
+
+La scelta, che premia la bassa occupazione in memoria e l'inserimento immediato di nuovi individui, soffre tuttavia di una potenziale perdita di varietà dovuta al meccanismo impiegato per effettuare le sostituzioni: una volta scelto un individuo tramite torneo negativo, infatti, questo viene perso per sempre anche se solo localmente peggiore di altri.
+
+\section{Old}
+Partendo dall'implementazione fornita in \footnote{\url{http://www.gp-field-guide.org.uk/}}, \emph{TinyGP}, un primo test consiste nell'eseguire il programma per approssimare, tramite Genetic Programming, la funzione seno in un certo intervallo (\texttt{[0, 6.2]}). Tuttavia, a differenza di quanto fatto in \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B4CompilingandRunningTinyGP.html}}, si sceglie di esplicitare un \emph{seed} come primo argomento da riga di comando (nella fattispecie uguale a 1), così da consentire l'esatta replicazione dell'esperimento.
+
+Data la struttura del progetto, occorre collocarsi in \texttt{\{USER\_SPECIFIC\}/ProjectWork\_GP/NotSoTinyGP/bin} ed utilizzare il comando:
+\begin{lstlisting}[caption={Esecuzione di TinyGP da riga di comando}]
+java tinygp.tiny_gp 1 ..\resources\sin\sin-data.txt > ..\tinygp_seed1.out
+\end{lstlisting}
+Per praticità di consultazione, tutto ciò che viene stampato in output viene rediretto in un apposito file di testo.
+
+\section{NotSoTinyGP}
+
+\section{Confronto tra implementazioni}
+\subsection{Analogie e differenze}
+\subsection{Approssimazione di una funzione polinomiale}
+\subsection{Approssimazione della funzione seno}
+\subsection{Performance e tuning dei parametri}
+
+\section{Applicazione al Gioco del Mulino}
+\subsection{Iper-euristiche}
+Il problema relativo al Gioco del Mulino per il quale viene chiamata in causa la Programmazione Genetica è quello di trovare buone euristiche, ottime o sub-ottime, tra tutte quelle possibili (potenzialmente infinite, in ogni caso tra un numero computazionalmente proibitivo). In questa sua applicazione, GP si colloca quindi come una forma di iper-euristica, ovvero come meccanismo di ricerca nello spazio delle euristiche.
+
+Da \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/128GPtoCreateSearchersandSolversHyperheuristics.html}}:
+\begin{quote}
+The difference between meta-heuristics and hyper-heuristics is that the former operate directly on the problem search space with the goal of finding optimal or near-optimal solutions. The latter, instead, operate on the heuristics search space (which consists of the heuristics used to solve the target problem). The goal then is finding or generating high-quality heuristics for a problem, for a certain class of instances of a problem, or even for a particular instance.
+\end{quote}
+Sempre nella stessa pagina vengono presentati diversi casi in cui GP ha ottenuto ottimi risultati come iper-euristica.
+
+\subsection{Restrizione del problema}
+\subsection{Co-evoluzione: bianco VS nero}
+\subsection{Analisi e valutazione delle euristiche trovate}
+%\subsection{Semplificazione e posizione relativa delle variabili}
+
+\section{Conclusioni}
+
+\section{Sviluppi futuri}
+
+%===========================================================================
+% bibliografia
+\clearpage
+
+% vedi: Scrivere la tesi di laurea in LATEX (IntroTesi) pag. 30 (comandi per compilazione)
+\addcontentsline{toc}{chapter}{\bibname}
+% complessiva (tutto):
+%\printbibliography
+
+% vedi: L’arte di scrivere con latex (ArteLaTeX) pag. 136 in avanti
+% i titoli e i filtri di queste sezioni sono definiti nel preambolo
+\printbibliography[heading=principali,filter=papers]
+\printbibliography[heading=web,type=online]
+\printbibliography[heading=integrative,type=report]
+
+\end{document}

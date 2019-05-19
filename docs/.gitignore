@@ -1,0 +1,17 @@
+*.zip
+*.bak
+
+*.aux
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.gz
+*.toc
+*.vrb
+*.bbl
+*.bcf
+*.blg
+*.xml
+
