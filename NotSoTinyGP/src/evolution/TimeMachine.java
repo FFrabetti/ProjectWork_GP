@@ -1,18 +1,20 @@
 package evolution;
 
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import model.Node;
 import operators.Operator;
-import utils.RandomGenerator;
 
 public class TimeMachine {
 
+	private Random random;
 	private Operator[] operators;
 	private Node[] currentGeneration; // support field for run()
 	
-	public TimeMachine(Operator[] operators) {
+	public TimeMachine(Random random, Operator[] operators) {
+		this.random = random;
 		this.operators = operators;
 	}
 	
@@ -37,7 +39,7 @@ public class TimeMachine {
 	}
 
 	private Operator selectRandOp() {
-		double p = RandomGenerator.getInstance().nextDouble();
+		double p = random.nextDouble();
 		int i = 0;
 		for(double q=0; i<operators.length && p>=q; q+=operators[i++].getOperatorRate());
 		return operators[i-1];

@@ -1,5 +1,6 @@
 package test.sin;
 import java.io.IOException;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,7 +29,6 @@ import selection.SelectionMechanism;
 import selection.TournamentSelection;
 import utils.DataExporter;
 import utils.PopulationAnalyser;
-import utils.RandomGenerator;
 import visitor.CountVisitor;
 
 public class TestMain {
@@ -61,8 +61,11 @@ public class TestMain {
 	
 	// -- decomment lines for (automatic) run() and for DataExporter.createCSV
 	
+	private static Random random = new Random();
+	
 	public static void main(String[] args) throws IOException {
-		if(SEED>=0) RandomGenerator.getInstance().setSeed(SEED);
+		if(SEED >= 0)
+			random.setSeed(SEED);
 		
 		String fileName = "resources/sin/" + FILE;
 		InputFileParser parser = new InputFileParser(fileName);
@@ -71,10 +74,10 @@ public class TestMain {
 		PopulationGenerator generator = getPopulationGenerator(factory);
 		
 		FitnessFunction fitness = getFitnessFunction(parser);
-		SelectionMechanism selection = new TournamentSelection(fitness, TSIZE);
+		SelectionMechanism selection = new TournamentSelection(random, fitness, TSIZE);
 
 		// operators
-		Crossover stxo = new SubtreeCrossover();
+		Crossover stxo = new SubtreeCrossover(random);
 		Operator crossover = new BaseOperator(CROSSOVER_PROB,
 				pop -> stxo.apply(selection.selectOne(pop), selection.selectOne(pop)));
 		
@@ -87,7 +90,7 @@ public class TestMain {
 		
 		// time machine
 		Node[] initialPop = generator.generate(POPSIZE);
-		TimeMachine tm = new TimeMachine(new Operator[] {crossover, mutation, reproduction});
+		TimeMachine tm = new TimeMachine(random, new Operator[] {crossover, mutation, reproduction});
 
 		// termination: fitness of the best individual above a certain threshold
 		Predicate<Node[]> terminationCriterion = pop -> 
@@ -166,16 +169,16 @@ public class TestMain {
 
 	private static Mutation getMutation(NodeFactory factory, PopulationGenerator generator, Crossover xo) {
 		if(USE_POINTMUT)
-			return new PointMutation(factory, PMUT_PER_NODE);
+			return new PointMutation(random, factory, PMUT_PER_NODE);
 		else
 			return new SubtreeMutation(generator, xo);
 	}
 
 	private static NodeFactory getNodeFactory(InputFileParser p) {
 		if(USE_SINFACTORY)
-			return new SinFactory(p.getNvar(), p.getNrand(), p.getMinrand(), p.getMaxrand());
+			return new SinFactory(random, p.getNvar(), p.getNrand(), p.getMinrand(), p.getMaxrand());
 		else
-			return new SinFactoryEps(p.getNvar(), p.getNrand(), p.getMinrand(), p.getMaxrand());
+			return new SinFactoryEps(random, p.getNvar(), p.getNrand(), p.getMinrand(), p.getMaxrand());
 	}
 
 	private static Node bestIndividual(Node[] pop, FitnessFunction fitness) {

@@ -31,12 +31,14 @@ public abstract class Node implements Cloneable {
 		return parent == null;
 	}
 	
+	// it should almost never be necessary to use it...
 	public void makeRoot() {
 		parent = null;
 	}
 
 	@Override
-	// A class implements the Cloneable interface to indicate to the java.lang.Object.clone() method that it is legal for that method to make afield-for-field copy of instances of that class.
+	// A class implements the Cloneable interface to indicate to the java.lang.Object.clone() method
+	// that it is legal for that method to make a field-for-field copy of instances of that class.
 	public abstract Node clone();
 	
 	public abstract int getArity();

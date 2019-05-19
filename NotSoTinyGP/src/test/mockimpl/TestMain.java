@@ -1,4 +1,5 @@
 package test.mockimpl;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,7 +24,6 @@ import selection.SelectionMechanism;
 import selection.TournamentSelection;
 import utils.DataExporter;
 import utils.PopulationAnalyser;
-import utils.RandomGenerator;
 import visitor.CountVisitor;
 
 public class TestMain {
@@ -43,19 +43,19 @@ public class TestMain {
 	private static final double FITNESS_DELTA = 0.05; // ok if fitness >= maxFitness-DELTA
 	
 	public static void main(String[] args) {
-		RandomGenerator.getInstance().setSeed(SEED);
+		Random random = new Random(SEED);
 		
-		NodeFactory factory = new MockFactory(0.5);
+		NodeFactory factory = new MockFactory(random, 0.5);
 		PopulationGenerator generator = new FullGenerator(factory, DEPTH);
 		FitnessFunction fitness = new MockFitness();
-		SelectionMechanism selection = new TournamentSelection(fitness, TSIZE);
+		SelectionMechanism selection = new TournamentSelection(random, fitness, TSIZE);
 
 		// operators
-		Crossover stxo = new SubtreeCrossover();
+		Crossover stxo = new SubtreeCrossover(random);
 		Operator crossover = new BaseOperator(CROSSOVER_PROB,
 				pop -> stxo.apply(selection.selectOne(pop), selection.selectOne(pop)));
 		
-		Mutation ptm = new PointMutation(factory, PMUT_PER_NODE);
+		Mutation ptm = new PointMutation(random, factory, PMUT_PER_NODE);
 		Operator mutation = new BaseOperator(MUTATION_PROB,
 				pop -> ptm.mutate(selection.selectOne(pop)));
 
@@ -69,7 +69,7 @@ public class TestMain {
 		
 		// time machine
 		Node[] initialPop = generator.generate(POPSIZE);
-		TimeMachine tm = new TimeMachine(new Operator[] {crossover, mutation, reproduction});
+		TimeMachine tm = new TimeMachine(random, new Operator[] {crossover, mutation, reproduction});
 
 		// termination: fitness of the best individual above a certain threshold
 		Predicate<Node[]> terminationCriterion = pop -> 

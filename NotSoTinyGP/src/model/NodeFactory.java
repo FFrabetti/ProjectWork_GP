@@ -1,8 +1,14 @@
 package model;
 
-import utils.RandomGenerator;
+import java.util.Random;
 
 public abstract class NodeFactory {
+	
+	protected final Random random;
+	
+	public NodeFactory(Random random) {
+		this.random = random;
+	}
 
 	public abstract int getTerminalSetSize();
 	
@@ -20,7 +26,7 @@ public abstract class NodeFactory {
 	}
 	
 	public Node getRandomNode(double pTerm) {
-		return RandomGenerator.getInstance().nextDouble() < pTerm ? getRandomTerminal() : getRandomFunction();
+		return random.nextDouble() < pTerm ? getRandomTerminal() : getRandomFunction();
 	}
 	
 	public abstract Node getRandomNode(int arity);

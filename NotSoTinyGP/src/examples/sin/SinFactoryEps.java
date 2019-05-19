@@ -2,12 +2,12 @@ package examples.sin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import model.FunctionNode;
 import model.Node;
 import model.NodeFactory;
 import model.TerminalNode;
-import utils.RandomGenerator;
 
 /*
  * The idea is to fill the terminal set with nrand "epsilon" fictitious terminals:
@@ -20,9 +20,7 @@ import utils.RandomGenerator;
  */
 
 public class SinFactoryEps extends NodeFactory {
-	
-	private RandomGenerator rand = RandomGenerator.getInstance();
-	
+		
 	private int nTerminals;
 	private List<TerminalNode> vars;
 	
@@ -38,7 +36,9 @@ public class SinFactoryEps extends NodeFactory {
 		functions.add(DivNode.class);
 	}
 	
-	public SinFactoryEps(int nvar, int nrand, double minrand, double maxrand) {
+	public SinFactoryEps(Random random, int nvar, int nrand, double minrand, double maxrand) {
+		super(random);
+		
 		this.minrand = minrand;
 		this.maxrand = maxrand;
 		
@@ -58,18 +58,18 @@ public class SinFactoryEps extends NodeFactory {
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		int index = rand.nextInt(nTerminals);
+		int index = random.nextInt(nTerminals);
 		return index<vars.size() ? (TerminalNode)vars.get(index).clone() : getRandomDouble();
 	}
 
 	private DoubleNode getRandomDouble() {
-		return new DoubleNode(rand.nextDouble()*(maxrand-minrand)+minrand);
+		return new DoubleNode(random.nextDouble()*(maxrand-minrand)+minrand);
 	}
 	
 	@Override
 	public FunctionNode getRandomFunction() {
 		try {
-			return functions.get(rand.nextInt(functions.size())).newInstance();
+			return functions.get(random.nextInt(functions.size())).newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {

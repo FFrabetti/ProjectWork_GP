@@ -27,3 +27,5 @@ gitign
 
 # data files
 *.csv
+/.metadata/
+.recommenders

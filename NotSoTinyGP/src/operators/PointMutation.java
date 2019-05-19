@@ -1,8 +1,9 @@
 package operators;
 
+import java.util.Random;
+
 import model.Node;
 import model.NodeFactory;
-import utils.RandomGenerator;
 
 /*
  * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/24RecombinationandMutation.html
@@ -13,10 +14,12 @@ import utils.RandomGenerator;
 
 public class PointMutation implements Mutation {
 
+	private Random random;
 	private NodeFactory factory;
 	private double pNode; // probability of a single node to be mutated
 	
-	public PointMutation(NodeFactory factory, double pNode) {
+	public PointMutation(Random random, NodeFactory factory, double pNode) {
+		this.random = random;
 		this.factory = factory;
 		this.pNode = pNode;
 	}
@@ -27,7 +30,7 @@ public class PointMutation implements Mutation {
 	}
 
 	private Node visitAndMutate(Node n) {
-		boolean mutation = RandomGenerator.getInstance().nextDouble() < pNode;
+		boolean mutation = random.nextDouble() < pNode;
 		
 		if(n.getArity() == 0) // terminal
 			return mutation ? factory.getRandomTerminal() : n;

@@ -1,10 +1,11 @@
 package examples.mockimpl;
 
+import java.util.Random;
+
 import model.FunctionNode;
 import model.Node;
 import model.NodeFactory;
 import model.TerminalNode;
-import utils.RandomGenerator;
 
 public class MockFactory extends NodeFactory {
 
@@ -21,7 +22,8 @@ public class MockFactory extends NodeFactory {
 	 * - significantly more functions than terminals -> behavior similar to the full method.
 	 */
 
-	public MockFactory(double pTerm) {
+	public MockFactory(Random random, double pTerm) {
+		super(random);
 		this.pTerm = pTerm;
 		// on real cases p would be:
 		// p = |terminal_set|/(|terminal_set|+|function_set|)
@@ -35,7 +37,7 @@ public class MockFactory extends NodeFactory {
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		return new NumNode(RandomGenerator.getInstance().nextInt(N_TERMINALS));
+		return new NumNode(random.nextInt(N_TERMINALS));
 	}
 
 	@Override

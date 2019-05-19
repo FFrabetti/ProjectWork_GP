@@ -1,11 +1,11 @@
 package operators;
 
+import java.util.Random;
 import java.util.function.Predicate;
 
 import model.FunctionNode;
 import model.Node;
 import model.TerminalNode;
-import utils.RandomGenerator;
 import visitor.CountVisitor;
 import visitor.RandAccessVisitor;
 
@@ -20,15 +20,17 @@ public class SubtreeCrossover implements Crossover {
 
 	private static final double DEF_PFUNCT = 0.9; // see class comment above
 	
+	private Random random;
 	// probability of choosing function nodes as crossover points
 	private double pFunction;
 	
-	public SubtreeCrossover(double pFunction) {
+	public SubtreeCrossover(Random random, double pFunction) {
+		this.random = random;
 		this.pFunction = pFunction;
 	}
 
-	public SubtreeCrossover() {
-		this(DEF_PFUNCT);
+	public SubtreeCrossover(Random random) {
+		this(random, DEF_PFUNCT);
 	}
 
 	@Override
@@ -56,7 +58,7 @@ public class SubtreeCrossover implements Crossover {
 	}
 
 	private Node selectXOverPoint(Node tree) {
-		boolean selectFctNode = RandomGenerator.getInstance().nextDouble() < pFunction;
+		boolean selectFctNode = random.nextDouble() < pFunction;
 		Predicate<Node> predicate = n -> selectFctNode ? n instanceof FunctionNode : n instanceof TerminalNode;
 		
 		CountVisitor countVisitor = new CountVisitor(predicate);
@@ -65,7 +67,7 @@ public class SubtreeCrossover implements Crossover {
 		if(countVisitor.getSize() == 0)
 			return tree; // no nodes of the selected type, use the root
 		else {
-			int index = RandomGenerator.getInstance().nextInt(countVisitor.getSize());
+			int index = random.nextInt(countVisitor.getSize());
 			RandAccessVisitor rav = new RandAccessVisitor(index, predicate);
 			tree.accept(rav);
 			return rav.getNode().get();

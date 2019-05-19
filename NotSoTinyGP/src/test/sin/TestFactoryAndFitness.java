@@ -1,6 +1,7 @@
 package test.sin;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.stream.DoubleStream;
 
 import examples.sin.DoubleNode;
@@ -12,19 +13,18 @@ import initialization.PopulationGenerator;
 import model.Node;
 import model.NodeFactory;
 import selection.FitnessFunction;
-import utils.RandomGenerator;
 
 public class TestFactoryAndFitness {
 	
 	public static void main(String[] args) throws IOException {
-		RandomGenerator.getInstance().setSeed(2);
+		Random random = new Random(2);
 		
 		String fileName = "resources/sin/double-toy-data.txt";
 		int maxDepth = 2;
 		int popSize = 3; // 10
 		
 		InputFileParser parser = new InputFileParser(fileName);		
-		NodeFactory factory = new SinFactory(
+		NodeFactory factory = new SinFactory(random,
 				parser.getNvar(),
 				parser.getNrand(),
 				parser.getMinrand(),

@@ -2,12 +2,12 @@ package examples.sin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import model.FunctionNode;
 import model.Node;
 import model.NodeFactory;
 import model.TerminalNode;
-import utils.RandomGenerator;
 
 /*
  * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B1OverviewofTinyGP.html
@@ -29,8 +29,6 @@ import utils.RandomGenerator;
 
 public class SinFactory extends NodeFactory {
 	
-	private RandomGenerator rand = RandomGenerator.getInstance();
-	
 	private int nTerminals; // utility field (== terminals.size())
 	private List<TerminalNode> terminals;
 	
@@ -43,7 +41,9 @@ public class SinFactory extends NodeFactory {
 		functions.add(DivNode.class);
 	}
 	
-	public SinFactory(int nvar, int nrand, double minrand, double maxrand) {
+	public SinFactory(Random random, int nvar, int nrand, double minrand, double maxrand) {
+		super(random);
+		
 		nTerminals = nvar + nrand;
 		terminals = new ArrayList<>(nTerminals);
 		
@@ -51,7 +51,7 @@ public class SinFactory extends NodeFactory {
 			terminals.add(new VarNode("x"+i));
 		
 		for(int i=0; i<nrand; i++)
-			terminals.add(new DoubleNode(rand.nextDouble()*(maxrand-minrand)+minrand));
+			terminals.add(new DoubleNode(random.nextDouble()*(maxrand-minrand)+minrand));
 	}
 
 	@Override
@@ -64,13 +64,13 @@ public class SinFactory extends NodeFactory {
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		return (TerminalNode) terminals.get(rand.nextInt(nTerminals)).clone();
+		return (TerminalNode) terminals.get(random.nextInt(nTerminals)).clone();
 	}
 
 	@Override
 	public FunctionNode getRandomFunction() {
 		try {
-			return functions.get(rand.nextInt(functions.size())).newInstance();
+			return functions.get(random.nextInt(functions.size())).newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {

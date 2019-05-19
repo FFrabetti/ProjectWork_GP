@@ -1,7 +1,8 @@
 package selection;
 
+import java.util.Random;
+
 import model.Node;
-import utils.RandomGenerator;
 
 /*
  * https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/23Selection.html
@@ -13,10 +14,12 @@ import utils.RandomGenerator;
 
 public class TournamentSelection extends SelectionMechanism {
 
+	private Random random;
 	private int size; // tournament size
 	
-	public TournamentSelection(FitnessFunction fitnessFct, int size) {
+	public TournamentSelection(Random random, FitnessFunction fitnessFct, int size) {
 		super(fitnessFct);
+		this.random = random;
 		this.size = size;
 	}
 
@@ -26,7 +29,7 @@ public class TournamentSelection extends SelectionMechanism {
 		Node best = null;
 		
 		for(int i=0; i<size; i++) {
-			Node n = population[RandomGenerator.getInstance().nextInt(population.length)];
+			Node n = population[random.nextInt(population.length)];
 			// TODO: just one evaluation for each individual -> store fitness for future uses
 			double fitness = getFitnessFunction().evalFitness(n);
 			
