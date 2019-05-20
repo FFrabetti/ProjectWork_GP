@@ -224,7 +224,7 @@
 
 Lo scopo di questa attività progettuale è quello di approfondire le tematiche relative all'utilizzo di tecniche di Genetic Programming per evolvere, in modo automatico, euristiche che possano guidare la ricerca nello spazio degli stati di un gioco a conoscenza completa, nella fattispecie il cosiddetto Gioco del Mulino o Schiera (\textit{Nine Men's Morris}).\\
 
-Una prima parte dell'attività è dedicata all'investigazione dell'algoritmo di GP in generale, partendo dall'analisi di un'implementazione funzionante di questi (\emph{TinyGP}) per poi costruire una propria implementazione in versione Object-Oriented, in linguaggio Java.
+Una prima parte dell'attività è dedicata all'investigazione dell'algoritmo di GP in generale, partendo dall'analisi di un'implementazione funzionante di questi (\emph{TinyGP}) per poi costruire una propria implementazione in versione Object-Oriented, in linguaggio \java.
 
 Particolarmente rilevante a tal fine è la possibilità di effettuare semplici test di comparazione tra le due versioni dell'algoritmo, così da avere una forma di conferma empirica della correttezza dell'implementazione creata, conferma che sarebbe altrimenti difficile da ottenere data l'elevata componente stocastica presente nei processi di GP.\\
 
@@ -239,9 +239,11 @@ L'idea di fondo non è tanto quella di sviluppare giocatori particolarmente comp
 
 Per quanto sia soltanto uno dei tanti sistemi di Genetic Programming disponibili in rete, il suo pregio risiede nell'estrema compattezza e semplicità e nella facilità di utilizzo, prestandosi quindi come un buon punto di partenza per capire le meccaniche di base dell'algoritmo e per effettuare alcuni semplici esperimenti.\\
 
-Per essere più precisi, l'implementazione pubblicata è la versione in Java di una precedente scritta in C per motivi di performance e di dimensioni dell'eseguibile risultante. Sebbene quindi formalmente si tratti di un programma Java, lo stile utilizzato è puramente procedurale e \emph{C-like}.
+Per essere più precisi, l'implementazione pubblicata è la versione in \java di una precedente scritta in C per motivi di performance e di dimensioni dell'eseguibile risultante. Sebbene quindi formalmente si tratti di un programma \java, lo stile utilizzato è puramente procedurale e \emph{C-like}.
 
 \subsection{Caratteristiche generali}
+\labelssec{TinyGP_mainFeatures}
+
 \begin{itemize}
 \item Simboli terminali: un numero configurabile di variabili ($x_1$, \ldots, $x_n$) e di costanti casuali
 \item Simboli di funzione: addizione, sottrazione, moltiplicazione e divisione protetta (tutte funzioni binarie)
@@ -259,6 +261,8 @@ I \emph{fitness case} vengono letti da file, uno per riga, e sono costituiti dal
 L'algoritmo di GP mira a massimizzare la funzione di fitness, ovvero a minimizzare l'errore totale tra i risultati attesi e quelli attuali.
 
 \subsection{Parametri di configurazione e interfacce di utilizzo}
+\labelssec{TinyGP_parameters}
+
 Da linea di comando è possibile passare un seed opzionale per il random number generator (se assente viene generato dal sistema) e il nome del file che contiene alcuni parametri dell'algoritmo e i \emph{fitness case}; se omesso viene ricercato un file chiamato ``problem.dat'' nel direttorio corrente.\\
 
 \noindent La struttura del file di input è la seguente:
@@ -300,7 +304,8 @@ dove:
 % TODO: l'individuo migliore ad ora trovato, eventualmente anche da generazioni precedenti
 \end{itemize}
 
-\subsection{Rappresentazione interna}
+\subsection{Dettagli dell'implementazione}
+\subsubsection{Rappresentazione interna}
 La rappresentazione interna utilizzata per gli individui/programmi non è altro che la linearizzazione della classica struttura ad albero tramite la notazione prefissa, dove ogni operatore è semplicemente seguito dai suoi operandi.
 Ad esempio, la seguente espressione in notazione infissa:
 \[
@@ -316,15 +321,14 @@ Grazie alla notazione prefissa è possibile fare a meno di parentesi e di regole
 
 La notazione prefissa ha quindi il vantaggio di poter mantenere in memoria delle semplici sequenze di simboli, terminali o di funzione, riducendo ogni individuo ad un semplice array. Come vedremo, la scelta è di semplificare il più possibile le strutture dati di supporto, retaggio della versione in C, facendo uso di array di byte.
 
-Naturalmente, appositi meccanismi vengono messi di conseguenza in atto per effettuare le operazioni di crossover e di mutazione sugli array, così come la generazione di individui (grow) e la loro valutazione come espressioni.
+Naturalmente, appositi meccanismi vengono messi di conseguenza in atto per effettuare le operazioni di crossover e di mutazione sugli array, così come la generazione di individui (\emph{grow}) e la loro valutazione come espressioni.
 
-\section{Dettagli dell'implementazione}
-\subsection{Simboli terminali e di funzione}
+\subsubsection{Simboli terminali e di funzione}
 Come precedentemente accennato, la codifica utilizzata prevede di memorizzare ogni individuo/espressione come un array di byte (\texttt{char[]}). Per fare ciò occorre mappare tutti i simboli, terminali e di funzione, in un singolo byte ciascuno, per un totale di 256 possibili simboli.
 
 L'idea adottata è quella di utilizzare gli indici da 0 a 255 al posto dei \emph{valori} (nel caso delle costanti numeriche) e dei \emph{simboli} (nel caso delle variabili e degli operatori di funzione), così da effettuare tutte le operazioni genetiche sugli indici e ricorrendo ai valori riferiti quasi esclusivamente al momento della valutazione della fitness.\\
 
-Il semplice individuo dell'esempio precedente, $* + 3\:4\:5$, in questa notazione basata su indici potrebbe quindi diventare qualcosa del tipo\footnote{043, 044 e 045 sono stati scritti con lo 0 davanti unicamente per evidenziare il fatto che non si tratta dei numeri 43, 44 e 45, ma di \emph{indici} che identificano dei valori numerici (in questo caso 3, 4 e 5). In Java la differenza è ancora più netta, in quanto questi ultimi sarebbero valori a virgola mobile a doppia precisione (\texttt{double}).}:
+Il semplice individuo dell'esempio precedente, $* + 3\:4\:5$, in questa notazione basata su indici potrebbe quindi diventare qualcosa del tipo\footnote{043, 044 e 045 sono stati scritti con lo 0 davanti unicamente per evidenziare il fatto che non si tratta dei numeri 43, 44 e 45, ma di \emph{indici} che identificano dei valori numerici (in questo caso 3, 4 e 5). In \java la differenza è ancora più netta, in quanto questi ultimi sarebbero valori a virgola mobile a doppia precisione (\texttt{double}).}:
 \[
 112\;110\;043\;044\;045
 \]
@@ -334,14 +338,14 @@ All'esecuzione del programma vengono generati in ogni caso, indipendentemente da
 
 Da notare come di questi 110, solamente quelli con indice compreso tra \texttt{NVAR} e \texttt{NVAR+NRAND-1} saranno realmente utilizzati.
 
-\subsection{Popolazione di partenza}
+\subsubsection{Popolazione di partenza}
 La prima generazione viene costruita tramite il metodo \emph{grow}, ovvero introducendo una probabilità del 50\% di scegliere un simbolo terminale ad ogni ricorsione effettuata durante la ``crescita'', prima del raggiungimento della profondità massima impostata (\texttt{DEPTH}).
 
 Nel raro caso che un individuo raggiunga complessivamente la dimensione massima (\texttt{MAX{\_}LEN}) in termini di numero di nodi/simboli, questo viene scartato e ri-generato da capo.\\
 
 La fitness viene immediatamente valutata per tutti i nuovi individui e memorizzata per impieghi futuri.
 
-\subsection{Valutazione della fitness}
+\subsubsection{Valutazione della fitness}
 Per quanto riguarda la fitness, per ogni \emph{fitness case} vengono copiati i valori da assegnare alle variabili nelle prime posizioni della tabella di conversione tra indici e costanti generate casualmente. In questo modo, all'esecuzione del programma il valutatore può ``dimenticarsi'' di quali indici rappresentino delle variabili e quali delle costanti, limitandosi a dover distinguere i soli indici che puntano a simboli di funzione.
 
 Queste vengono poi eseguite dopo aver ricorsivamente prelevato dell'array, scorso tramite un suo \emph{program counter}, i relativi operandi.\\
@@ -355,7 +359,7 @@ num/den & \text{altrimenti}
 \end{cases}
 \]
 
-\subsection{Ricombinazione e sostituzione}
+\subsubsection{Ricombinazione e sostituzione}
 Come menzionato nella sezione precedente, per mantenere le generazioni di dimensione costante, ogni nuovo individuo generato viene inserito al posto di un altro già presente, selezionato tramite un torneo negativo. Non vi è quindi una netta separazione tra generazioni successive, nel senso che un individuo appena creato ed inserito nella popolazione all'interno della generazione $i-esima$ potrebbe essere scelto indistintamente come possibile `genitore' di un altro individuo appartenente alla stessa generazione $i$.
 
 L'unica discriminante tra un individuo creato in una generazione piuttosto che in un'altra è quindi il solo conteggio delle operazioni genetiche effettuate, che si resetta ogni volta che si raggiunge il numero impostato come dimensione della popolazione.\\
@@ -372,9 +376,62 @@ java tinygp.tiny_gp 1 ..\resources\sin\sin-data.txt > ..\tinygp_seed1.out
 Per praticità di consultazione, tutto ciò che viene stampato in output viene rediretto in un apposito file di testo.
 
 \section{NotSoTinyGP}
+L'implementazione \emph{NotSoTinyGP} mira a re-interpretare le logiche dell'algoritmo di Genetic Programming viste in \emph{TinyGP} in chiave Object-Oriented, spostando il focus non tanto sulla compattezza del codice e la sua efficienza a runtime, quanto sulla modularità e sull'estensibilità.
+
+Si considerino ad esempio i casi in cui si volesse -- ed in parte è stato fatto -- aggiungere altri meccanismi per la generazione della popolazione iniziale, come i metodi \emph{full} e \emph{ramped half-and-half}, altri operatori genetici, altre funzioni oltre alle quattro operazioni elementari, eccetera.\\
+
+Mentre da un lato si è cercato di mantenere per certi versi una forma di compatibilità con \emph{TinyGP}, specialmente per quanto riguarda l'aspetto delle interfacce di utilizzo, dall'altro si è scelto di approfittare della scrittura di questa nuova implementazione per sperimentare varianti relative ad alcune scelte progettuali, così che la messa a confronto delle due versioni non si limiti ad una semplice questione di efficienza e di variazioni stocastiche.
+
+In ogni caso, le differenze tra le due implementazioni verranno riprese più nel dettaglio in seguito, in una sezione dedicata.
+
+\subsection{Caratteristiche generali}
+Si elencano solo quelle che si discostano da quanto dichiarato in \xss{TinyGP_mainFeatures} per \emph{TinyGP}.
+\begin{itemize}
+\item Simboli terminali e di funzione: ottenibili tramite un'apposita \texttt{NodeFactory}, pertanto facilmente configurabili
+\item Per la costituzione della popolazione iniziale possono essere utilizzati il seguenti metodi: \emph{grow}, \emph{full}, \emph{ramped half-and-half} o versioni `ibride' di questi, ad esempio con una proporzione configurabile di \emph{grow} e \emph{full}
+%\item Il sistema è \emph{steady state}: il numero di individui per generazione è configurabile, ma costante; una generazione è considerata conclusa solo dopo che sono state effettuate tante operazioni genetiche quanti sono gli individui
+\item La selezione avviene tramite \emph{tournament selection}. Non vengono invece utilizzati tornei ``negativi'' per la scelta degli individui da sostituire
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO
+\item Operatori: \emph{subtree crossover} (con probabilità uniforme di selezionare un qualsiasi nodo) e \emph{point mutation}
+%\item Terminazione: ad ogni generazione, se la fitness del programma migliore è inferiore a una certa soglia ($10^{-5}$), l'algoritmo termina con successo, altrimenti termina con fallimento una volta raggiunto il numero massimo di generazioni impostato
+\end{itemize}
+
+\subsection{Parametri di configurazione e interfacce di utilizzo}
+
+\subsection{Dettagli dell'implementazione}
+\subsubsection{Rappresentazione interna}
+La rappresentazione scelta per gli individui/programmi è quella tradizionale, ad albero, basata su una semplice gerarchia composta da \texttt{TerminalNode} (nodi terminali o foglie) e da \texttt{FunctionNode} (nodi intermedi o di funzione), entrambi sottoclassi di \texttt{Node}.
+
+I riferimenti padre-figlio sono bidirezionali e la consistenza di tali collegamenti viene garantita dai relativi costruttori e metodi setter.
+
+\subsubsection{Simboli terminali e di funzione}
+Come precedentemente affermato, la generazione dei nodi viene affidata ad una factory, il cui compito è in sostanza quello di gestire gli insiemi dei simboli terminali e di funzione. %Le funzioni scelte sono, per semplicità, le stesse utilizzate da \emph{TinyGP}, ovvero le quattro operazioni elementari, e tra i terminali vi possono essere un numero configurabile di variabili.
+
+Quello che resta da definire è come garantire variabilità all'interno del \emph{terminal set} in termini di costanti numeriche. In questo caso, per differenziarsi dalla scelta fatta in \emph{TinyGP}, si è deciso di ricorrere ad una \emph{ephemeral random constant}, ovvero un simbolo-placeholder che, non appena selezionato, genera una nuova costante casuale (nell'intervallo presente nel file di input descritto in \xss{TinyGP_parameters}).\\
+
+L'utilizzo di una \emph{ephemeral random constant} apre alcuni interrogativi su come gestire, in questo scenario, la cardinalità dell'insieme dei simboli terminali e come la probabilità di scegliere, tra i terminali stessi, una variabile piuttosto che una costante, essendoci appunto \emph{un solo} simbolo corrispondente a costanti numeriche.
+
+Entrambe le questioni sono state risolte considerando la compatibilità con le interfacce utilizzate da \emph{TinyGP}: poiché abbiamo a disposizione un parametro per indicare il numero di costanti casuali (e in loro range), questo numero viene utilizzato sia per stabilire la cardinalità dell'insieme, sommato al numero di variabili, sia per determinare la probabilità di scegliere una variabile ($\frac{nvar}{nvar+nrand}$). In questo secondo caso, se dovesse essere selezionata una costante numerica, questa viene generata casualmente ``al volo'' su richiesta; in altre parole, il sistema si comporta come se avesse a disposizione un insieme composto da $nvar$ \emph{ephemeral random constant}.
+
+\subsubsection{Popolazione di partenza}
+Per garantire una maggiore varietà nella popolazione iniziale, tra i diversi metodi disponibili per i test viene utilizzato \emph{ramped half-and-half}, dove il 50\% degli individui vengono generati con \emph{full} e i restanti con \emph{grow}, in entrambi i casi sfruttando un range di profondità massime.\\
+
+Una nota addizionale riguarda il metodo \emph{grow}: fissata una profondità limite, alla selezione di ogni nodo prima dell'ultimo livello (dove sono previsti solo nodi terminali) vi è una certa probabilità di scegliere una funzione piuttosto che un terminale. Come prima approssimazione si potrebbe pensare di determinare questa probabilità in base alla cardinalità relativa dei due insiemi, tuttavia ciò risulterebbe facilmente sbilanciato in molte situazioni reali in cui il numero di simboli terminali sovrasta quello delle funzioni.
+
+Per lasciare aperte le porte a qualsiasi scenario di utilizzo, la scelta di come gestire la generazione di un nodo casuale viene delegata alle varie implementazioni di \texttt{NodeFactory}, senza che nulla di predefinito venga cablato all'interno dell'algoritmo \emph{grow}.
 
 \section{Confronto tra implementazioni}
-\subsection{Analogie e differenze}
+\begin{itemize}
+\item Diverse rappresentazioni interne: linearizzata (array) con notazione prefissa, ad albero con riferimenti bidirezionali
+\item Generazione della popolazione iniziale: \emph{grow} con probabilità 50\% di selezionare simboli terminali; \emph{ramped half-and-half} con parametri configurabili (di fatto 50\%-50\% full/grow e 50\% di terminazione prima della profondità massima)
+\end{itemize}
+
+\subsection{Analogie e differenze concettuali}
+Similmente a \emph{TinyGP} il numero di individui per generazione è costante, tuttavia in \emph{NotSoTinyGP} non vengono effettuati tornei negativi per la sostituzione degli individui. Questo perché, per scelta, ogni generazione è rigidamente separata dalla precedente e dalla successiva, con la conseguenza che ogni individuo appartenente alla generazione $i$ può derivare unicamente da un'operazione genetica effettuata su uno (o più) individui della generazione $(i-1)$.\\
+
+Da notare come anche in questo caso vi è una certa probabilità che un individuo ``sparisca'' senza lasciare alcuna progenie, se non dovesse vincere alcun torneo di selezione, mentre altri, quelli che si dimostrano localmente più \emph{fit}, daranno vita a più nuovi individui.
+
 \subsection{Approssimazione di una funzione polinomiale}
 \subsection{Approssimazione della funzione seno}
 \subsection{Performance e tuning dei parametri}
