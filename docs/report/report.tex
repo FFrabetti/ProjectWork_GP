@@ -122,7 +122,7 @@
  \fi
 %%%%%%%%%%%%%%%
 
-\newcommand{\java}{\textsf{Java}}
+\newcommand{\java}{\textsf{Java}\xspace}
 \newcommand{\android}{\texttt{Android}}
 \newcommand{\dsl}{\texttt{DSL}}
 \newcommand{\jazz}{\texttt{Jazz}}
@@ -237,16 +237,16 @@ L'idea di fondo non è tanto quella di sviluppare giocatori particolarmente comp
 
 \emph{TinyGP} è l'implementazione dell'algoritmo di Programmazione Genetica fornita nell'appendice B di \footnote{\url{http://www.gp-field-guide.org.uk/}} e originariamente sviluppata nell'ambito dell'omonima competizione tenutasi all'interno della Genetic and Evolutionary Computation Conference (GECCO) del 2004.
 
-Per quanto sia soltanto uno dei tanti sistemi di Genetic Programming disponibili in rete, il suo pregio risiede nell'estrema compattezza e semplicità e nella facilità di utilizzo, prestandosi quindi come un buon punto di partenza per capire le meccaniche di base dell'algoritmo e per effettuare alcuni semplici esperimenti.\\
+Per quanto sia soltanto uno dei tanti sistemi di Genetic Programming disponibili in rete, il suo pregio risiede nell'estrema compattezza e semplicità del codice e nella facilità di utilizzo, prestandosi quindi come un buon punto di partenza per capire le meccaniche di base dell'algoritmo e per effettuare alcuni semplici esperimenti.\\
 
-Per essere più precisi, l'implementazione pubblicata è la versione in \java di una precedente scritta in C per motivi di performance e di dimensioni dell'eseguibile risultante. Sebbene quindi formalmente si tratti di un programma \java, lo stile utilizzato è puramente procedurale e \emph{C-like}.
+Per essere precisi, l'implementazione pubblicata è la versione in \java di una precedente scritta in C per motivi di performance e di dimensioni dell'eseguibile risultante. Sebbene quindi formalmente si tratti di un programma \java, lo stile utilizzato è puramente procedurale e \emph{C-like}.
 
 \subsection{Caratteristiche generali}
 \labelssec{TinyGP_mainFeatures}
 
 \begin{itemize}
 \item Simboli terminali: un numero configurabile di variabili ($x_1$, \ldots, $x_n$) e di costanti casuali
-\item Simboli di funzione: addizione, sottrazione, moltiplicazione e divisione protetta (tutte funzioni binarie)
+\item Simboli di funzione: addizione, sottrazione, moltiplicazione e divisione protetta\footnote{Per evitare fallimenti a runtime, la divisione per zero viene intercettata prima della sua esecuzione (\emph{evaluation safety})} (tutte funzioni binarie, a due argomenti)
 \item Per la costituzione della popolazione iniziale viene utilizzato il metodo \emph{grow} con profondità massima configurabile
 \item Il sistema è \emph{steady state}: il numero di individui per generazione è configurabile, ma costante; una generazione è considerata conclusa solo dopo che sono state effettuate tante operazioni genetiche quanti sono gli individui
 \item La selezione avviene tramite \emph{tournament selection}, mentre tornei ``negativi'' vengono utilizzati per la scelta degli individui da sostituire
@@ -263,7 +263,7 @@ L'algoritmo di GP mira a massimizzare la funzione di fitness, ovvero a minimizza
 \subsection{Parametri di configurazione e interfacce di utilizzo}
 \labelssec{TinyGP_parameters}
 
-Da linea di comando è possibile passare un seed opzionale per il random number generator (se assente viene generato dal sistema) e il nome del file che contiene alcuni parametri dell'algoritmo e i \emph{fitness case}; se omesso viene ricercato un file chiamato ``problem.dat'' nel direttorio corrente.\\
+Da linea di comando è possibile passare un \emph{seed} opzionale per il random number generator (se assente viene generato dal sistema) e il nome del file che contiene alcuni parametri dell'algoritmo e i \emph{fitness case}; se omesso viene ricercato un file chiamato ``problem.dat'' nel direttorio corrente.\\
 
 \noindent La struttura del file di input è la seguente:
 \begin{lstlisting}[caption={Struttura del file di input}]
@@ -286,11 +286,11 @@ dove:
 \noindent Parametri di configurazione staticamente definiti all'interno del codice:
 \begin{itemize}
 \setlength\itemsep{0.1em}
-\item \texttt{MAX{\_}LEN}: la dimensione massima che un programma può avere
-\item \texttt{POPSIZE}: il numero di individui in ogni generazione
-\item \texttt{DEPTH}: la profondità massima degli individui nella popolazione iniziale
+\item \texttt{MAX{\_}LEN}: dimensione massima che un singolo programma può avere
+\item \texttt{POPSIZE}: numero di individui in ogni generazione
+\item \texttt{DEPTH}: profondità massima degli individui nella popolazione iniziale
 \item \texttt{GENERATIONS}: numero massimo di generazioni
-\item \texttt{CROSSOVER{\_}PROB}: probabilità di utilizzare l'operatore crossover (in alternativa alla mutazione)
+\item \texttt{CROSSOVER{\_}PROB}: probabilità di utilizzare l'operatore crossover, in alternativa alla mutazione
 \item \texttt{PMUT{\_}PER{\_}NODE}: nel caso di mutazione, la probabilità che un singolo nodo venga mutato
 \item \texttt{TSIZE}: numero di individui selezionati per ogni torneo
 \end{itemize}
@@ -319,36 +319,34 @@ Mentre sotto forma di albero si avrebbe un nodo radice (*) che ha come figlio si
 
 Grazie alla notazione prefissa è possibile fare a meno di parentesi e di regole di priorità degli operatori, ovvero non è nemmeno necessario mantenere, come sarebbe necessario fare nel caso di una rappresentazione ad albero, la distinzione dei diversi livelli di priorità. L'espressione $2+3*5$ infatti, pur non necessitando di parentesi, sotto forma di albero dovrebbe conservare in qualche modo la semantica di valutazione \textit{``prima moltiplicazioni e divisioni''}, generando un albero a due livelli ben diverso da quello prodotto da $(2+3)*5$.\\
 
-La notazione prefissa ha quindi il vantaggio di poter mantenere in memoria delle semplici sequenze di simboli, terminali o di funzione, riducendo ogni individuo ad un semplice array. Come vedremo, la scelta è di semplificare il più possibile le strutture dati di supporto, retaggio della versione in C, facendo uso di array di byte.
+La notazione prefissa ha quindi il vantaggio di poter mantenere in memoria pure sequenze di simboli, terminali o di funzione, riducendo ogni individuo ad un semplice array. Come vedremo, la scelta è di semplificare il più possibile le strutture dati di supporto, retaggio della versione in C, facendo uso di array di byte.
 
-Naturalmente, appositi meccanismi vengono messi di conseguenza in atto per effettuare le operazioni di crossover e di mutazione sugli array, così come la generazione di individui (\emph{grow}) e la loro valutazione come espressioni.
+Naturalmente, appositi meccanismi vengono messi in atto per effettuare le operazioni di crossover e di mutazione sugli array, così come la generazione di individui (\emph{grow}) e la loro valutazione come espressioni.
 
 \subsubsection{Simboli terminali e di funzione}
 Come precedentemente accennato, la codifica utilizzata prevede di memorizzare ogni individuo/espressione come un array di byte (\texttt{char[]}). Per fare ciò occorre mappare tutti i simboli, terminali e di funzione, in un singolo byte ciascuno, per un totale di 256 possibili simboli.
 
-L'idea adottata è quella di utilizzare gli indici da 0 a 255 al posto dei \emph{valori} (nel caso delle costanti numeriche) e dei \emph{simboli} (nel caso delle variabili e degli operatori di funzione), così da effettuare tutte le operazioni genetiche sugli indici e ricorrendo ai valori riferiti quasi esclusivamente al momento della valutazione della fitness.\\
+L'idea è quella di utilizzare gli indici da 0 a 255 al posto dei \emph{valori} (nel caso delle costanti numeriche) e dei \emph{simboli} (nel caso delle variabili e degli operatori di funzione), così da effettuare tutte le operazioni genetiche sugli indici e ricorrendo ai valori riferiti quasi esclusivamente al momento della valutazione della fitness.\\
 
 Il semplice individuo dell'esempio precedente, $* + 3\:4\:5$, in questa notazione basata su indici potrebbe quindi diventare qualcosa del tipo\footnote{043, 044 e 045 sono stati scritti con lo 0 davanti unicamente per evidenziare il fatto che non si tratta dei numeri 43, 44 e 45, ma di \emph{indici} che identificano dei valori numerici (in questo caso 3, 4 e 5). In \java la differenza è ancora più netta, in quanto questi ultimi sarebbero valori a virgola mobile a doppia precisione (\texttt{double}).}:
 \[
 112\;110\;043\;044\;045
 \]
-L'implementazione impiega, per scelta arbitraria, solamente i primi 114 indici sui 256 teoricamente disponibili. Il numero massimo di variabili e di costanti numeriche -- ovvero il numero massimo di simboli terminali -- è quindi vincolato a 110 ($=114-4$, dove 4 sono le funzioni disponibili)\footnote{In effetti, per una probabile svista, il massimo numero ammesso risulta essere 109.}.\\
+L'implementazione impiega, per scelta arbitraria, solamente i primi 114 indici sui 256 teoricamente disponibili. Il numero massimo di variabili e di costanti numeriche -- ovvero il numero massimo di simboli terminali -- è quindi vincolato a 110 ($=114-4$, dove 4 sono le funzioni presenti)\footnote{In effetti, per una probabile svista, il massimo numero ammesso risulta essere 109.}.\\
 
 All'esecuzione del programma vengono generati in ogni caso, indipendentemente dal numero di variabili e di costanti impostato, 110 valori casuali nel range specificato da \texttt{MINRAND} e \texttt{MAXRAND}, per essere successivamente puntati dai relativi indici.
 
 Da notare come di questi 110, solamente quelli con indice compreso tra \texttt{NVAR} e \texttt{NVAR+NRAND-1} saranno realmente utilizzati.
 
 \subsubsection{Popolazione di partenza}
-La prima generazione viene costruita tramite il metodo \emph{grow}, ovvero introducendo una probabilità del 50\% di scegliere un simbolo terminale ad ogni ricorsione effettuata durante la ``crescita'', prima del raggiungimento della profondità massima impostata (\texttt{DEPTH}).
+La prima generazione viene costruita tramite il metodo \emph{grow}, con una probabilità del 50\% di scegliere un terminale per ogni nuovo simbolo prima del raggiungimento della profondità massima impostata (\texttt{DEPTH}).
 
-Nel raro caso che un individuo raggiunga complessivamente la dimensione massima (\texttt{MAX{\_}LEN}) in termini di numero di nodi/simboli, questo viene scartato e ri-generato da capo.\\
-
-La fitness viene immediatamente valutata per tutti i nuovi individui e memorizzata per impieghi futuri.
+Nel raro caso che un individuo superi complessivamente la dimensione limite (\texttt{MAX{\_}LEN}) in termini di numero di nodi/simboli, questo viene scartato e ri-generato da capo.
 
 \subsubsection{Valutazione della fitness}
-Per quanto riguarda la fitness, per ogni \emph{fitness case} vengono copiati i valori da assegnare alle variabili nelle prime posizioni della tabella di conversione tra indici e costanti generate casualmente. In questo modo, all'esecuzione del programma il valutatore può ``dimenticarsi'' di quali indici rappresentino delle variabili e quali delle costanti, limitandosi a dover distinguere i soli indici che puntano a simboli di funzione.
+Per quanto riguarda la fitness, per ogni \emph{fitness case} vengono copiati i valori -- letti da file -- da assegnare alle variabili nelle prime \texttt{NVAR} posizioni della tabella di conversione tra indici e costanti generate casualmente. In questo modo, all'esecuzione del programma il valutatore può ``dimenticarsi'' di quali indici rappresentino delle variabili e quali delle costanti, limitandosi a dover distinguere i soli indici che puntano a simboli di funzione.\\
 
-Queste vengono poi eseguite dopo aver ricorsivamente prelevato dell'array, scorso tramite un suo \emph{program counter}, i relativi operandi.\\
+Per l'esecuzione di una funzione vengono ricorsivamente prelevati dell'array, ed eventualmente calcolati, i suoi operandi.
 
 Una menzione particolare merita di essere fatta per la divisione protetta ($/_p$), implementata nel seguente modo:
 \[
@@ -359,12 +357,14 @@ num/den & \text{altrimenti}
 \end{cases}
 \]
 
+La fitness viene immediatamente valutata per tutti i nuovi individui e memorizzata per impieghi futuri, in particolare per essere usata per effettuare le selezioni ``positive'' e ``negative'', per le statistiche relative ad ogni generazione e per la valutazione della condizione di terminazione.
+
 \subsubsection{Ricombinazione e sostituzione}
-Come menzionato nella sezione precedente, per mantenere le generazioni di dimensione costante, ogni nuovo individuo generato viene inserito al posto di un altro già presente, selezionato tramite un torneo negativo. Non vi è quindi una netta separazione tra generazioni successive, nel senso che un individuo appena creato ed inserito nella popolazione all'interno della generazione $i-esima$ potrebbe essere scelto indistintamente come possibile `genitore' di un altro individuo appartenente alla stessa generazione $i$.
+Come menzionato nella sezione precedente, per mantenere le generazioni di dimensione costante, ogni nuovo individuo viene immediatamente inserito al posto di un altro già presente, selezionato tramite un torneo negativo. Non vi è dunque una netta separazione tra generazioni successive, nel senso che un individuo appena inserito all'interno della popolazione potrebbe essere scelto indistintamente come `genitore' di un altro individuo appartenente alla stessa generazione.
 
-L'unica discriminante tra un individuo creato in una generazione piuttosto che in un'altra è quindi il solo conteggio delle operazioni genetiche effettuate, che si resetta ogni volta che si raggiunge il numero impostato come dimensione della popolazione.\\
+L'unica discriminante tra un individuo creato in una generazione piuttosto che in un'altra è quindi il solo conteggio delle operazioni genetiche effettuate, conteggio che si resetta ogni volta che si raggiunge il numero impostato come dimensione della popolazione.\\
 
-La scelta, che premia la bassa occupazione in memoria e l'inserimento immediato di nuovi individui, soffre tuttavia di una potenziale perdita di varietà dovuta al meccanismo impiegato per effettuare le sostituzioni: una volta scelto un individuo tramite torneo negativo, infatti, questo viene perso per sempre anche se solo localmente peggiore di altri.
+La scelta, che premia la bassa occupazione di memoria e l'inserimento immediato di nuovi individui (potenzialmente migliori dei genitori), rende tuttavia il sistema più incline a soffrire di una possibile perdita di varietà dovuta proprio alle sostituzioni: una volta scelto un individuo tramite torneo negativo, infatti, questo viene perso per sempre anche se solo localmente peggiore di altri.
 
 \section{Old}
 Partendo dall'implementazione fornita in \footnote{\url{http://www.gp-field-guide.org.uk/}}, \emph{TinyGP}, un primo test consiste nell'eseguire il programma per approssimare, tramite Genetic Programming, la funzione seno in un certo intervallo (\texttt{[0, 6.2]}). Tuttavia, a differenza di quanto fatto in \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B4CompilingandRunningTinyGP.html}}, si sceglie di esplicitare un \emph{seed} come primo argomento da riga di comando (nella fattispecie uguale a 1), così da consentire l'esatta replicazione dell'esperimento.
