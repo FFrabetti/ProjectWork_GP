@@ -246,7 +246,7 @@ Per essere precisi, l'implementazione pubblicata è la versione in \java di una 
 
 \begin{itemize}
 \item Simboli terminali: un numero configurabile di variabili ($x_1$, \ldots, $x_n$) e di costanti casuali
-\item Simboli di funzione: addizione, sottrazione, moltiplicazione e divisione protetta\footnote{Per evitare fallimenti a runtime, la divisione per zero viene intercettata prima della sua esecuzione (\emph{evaluation safety})} (tutte funzioni binarie, a due argomenti)
+\item Simboli di funzione: addizione, sottrazione, moltiplicazione e divisione protetta\footnote{Per evitare fallimenti a runtime, la divisione per zero viene intercettata prima della sua esecuzione (\emph{evaluation safety}).} (tutte funzioni binarie, a due argomenti)
 \item Per la costituzione della popolazione iniziale viene utilizzato il metodo \emph{grow} con profondità massima configurabile
 \item Il sistema è \emph{steady state}: il numero di individui per generazione è configurabile, ma costante; una generazione è considerata conclusa solo dopo che sono state effettuate tante operazioni genetiche quanti sono gli individui
 \item La selezione avviene tramite \emph{tournament selection}, mentre tornei ``negativi'' vengono utilizzati per la scelta degli individui da sostituire
@@ -393,11 +393,12 @@ Si elencano solo quelle che si discostano da quanto dichiarato in \xss{TinyGP_ma
 \item La selezione avviene tramite \emph{tournament selection}. Non vengono invece utilizzati tornei ``negativi'' per la scelta degli individui da sostituire
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO
-\item Operatori: \emph{subtree crossover} (con probabilità uniforme di selezionare un qualsiasi nodo) e \emph{point mutation}
+\item TODO Operatori: \emph{subtree crossover} (con probabilità uniforme di selezionare un qualsiasi nodo) e \emph{point mutation}
 %\item Terminazione: ad ogni generazione, se la fitness del programma migliore è inferiore a una certa soglia ($10^{-5}$), l'algoritmo termina con successo, altrimenti termina con fallimento una volta raggiunto il numero massimo di generazioni impostato
 \end{itemize}
 
 \subsection{Parametri di configurazione e interfacce di utilizzo}
+TODO
 
 \subsection{Dettagli dell'implementazione}
 \subsubsection{Rappresentazione interna}
@@ -408,29 +409,45 @@ I riferimenti padre-figlio sono bidirezionali e la consistenza di tali collegame
 \subsubsection{Simboli terminali e di funzione}
 Come precedentemente affermato, la generazione dei nodi viene affidata ad una factory, il cui compito è in sostanza quello di gestire gli insiemi dei simboli terminali e di funzione. %Le funzioni scelte sono, per semplicità, le stesse utilizzate da \emph{TinyGP}, ovvero le quattro operazioni elementari, e tra i terminali vi possono essere un numero configurabile di variabili.
 
-Quello che resta da definire è come garantire variabilità all'interno del \emph{terminal set} in termini di costanti numeriche. In questo caso, per differenziarsi dalla scelta fatta in \emph{TinyGP}, si è deciso di ricorrere ad una \emph{ephemeral random constant}, ovvero un simbolo-placeholder che, non appena selezionato, genera una nuova costante casuale (nell'intervallo presente nel file di input descritto in \xss{TinyGP_parameters}).\\
+Resta da definire è come garantire variabilità all'interno del \emph{terminal set} in termini di costanti numeriche. In questo caso, per differenziarsi dalla scelta fatta in \emph{TinyGP}, si è deciso di ricorrere ad una \emph{ephemeral random constant}, ovvero un simbolo-placeholder che, non appena selezionato, genera una nuova costante casuale (nell'intervallo presente nel file di input descritto in \xss{TinyGP_parameters}).\\
 
-L'utilizzo di una \emph{ephemeral random constant} apre alcuni interrogativi su come gestire, in questo scenario, la cardinalità dell'insieme dei simboli terminali e come la probabilità di scegliere, tra i terminali stessi, una variabile piuttosto che una costante, essendoci appunto \emph{un solo} simbolo corrispondente a costanti numeriche.
+L'utilizzo di una \emph{ephemeral random constant} apre alcuni interrogativi su come gestire la cardinalità dell'insieme dei simboli terminali\footnote{Questa, insieme alla cardinalità dei simboli di funzione, può essere impiegata ad esempio nel metodo \emph{grow} per la generazione casuale di simboli prelevati dall'unione dei due insiemi.} e come la probabilità di scegliere, tra i terminali stessi, una variabile piuttosto che una costante, essendoci appunto \emph{un solo} simbolo corrispondente a costanti numeriche.
 
-Entrambe le questioni sono state risolte considerando la compatibilità con le interfacce utilizzate da \emph{TinyGP}: poiché abbiamo a disposizione un parametro per indicare il numero di costanti casuali (e in loro range), questo numero viene utilizzato sia per stabilire la cardinalità dell'insieme, sommato al numero di variabili, sia per determinare la probabilità di scegliere una variabile ($\frac{nvar}{nvar+nrand}$). In questo secondo caso, se dovesse essere selezionata una costante numerica, questa viene generata casualmente ``al volo'' su richiesta; in altre parole, il sistema si comporta come se avesse a disposizione un insieme composto da $nvar$ \emph{ephemeral random constant}.
+Entrambe le questioni sono state risolte considerando la compatibilità con le interfacce utilizzate da \emph{TinyGP}: poiché abbiamo a disposizione un parametro, \texttt{NRAND}, per indicare il numero di costanti casuali (e due per il loro range), questo viene utilizzato sia per stabilire la cardinalità dell'insieme, sommato al numero di variabili, sia per determinare la probabilità di scegliere una variabile ($\frac{nvar}{nvar+nrand}$). In questo secondo caso, se dovesse essere selezionata una costante numerica, questa viene generata casualmente ``al volo'' su richiesta; in altre parole, il sistema si comporta come se avesse a disposizione un insieme composto da \texttt{NRAND} \emph{ephemeral random constant}.
 
 \subsubsection{Popolazione di partenza}
-Per garantire una maggiore varietà nella popolazione iniziale, tra i diversi metodi disponibili per i test viene utilizzato \emph{ramped half-and-half}, dove il 50\% degli individui vengono generati con \emph{full} e i restanti con \emph{grow}, in entrambi i casi sfruttando un range di profondità massime.\\
+Per garantire una maggiore varietà nella popolazione iniziale, tra i diversi metodi disponibili, per i test viene utilizzato \emph{ramped half-and-half}, dove il 50\% degli individui vengono generati con \emph{full} e i restanti con \emph{grow}, in entrambi i casi sfruttando un range di profondità massime.\\
 
 Una nota addizionale riguarda il metodo \emph{grow}: fissata una profondità limite, alla selezione di ogni nodo prima dell'ultimo livello (dove sono previsti solo nodi terminali) vi è una certa probabilità di scegliere una funzione piuttosto che un terminale. Come prima approssimazione si potrebbe pensare di determinare questa probabilità in base alla cardinalità relativa dei due insiemi, tuttavia ciò risulterebbe facilmente sbilanciato in molte situazioni reali in cui il numero di simboli terminali sovrasta quello delle funzioni.
 
 Per lasciare aperte le porte a qualsiasi scenario di utilizzo, la scelta di come gestire la generazione di un nodo casuale viene delegata alle varie implementazioni di \texttt{NodeFactory}, senza che nulla di predefinito venga cablato all'interno dell'algoritmo \emph{grow}.
 
+\subsection{Toy example: bilanciamento di pari e dispari}
+
+
 \section{Confronto tra implementazioni}
+Al di là delle differenze puramente implementative, come la scelta della rappresentazione interna da utilizzare per gli individui, quello che risulta più significativo sono le differenze nell'algoritmo, ovvero le ragioni per le quali dovrei, sperabilmente, aspettarmi risultati diversi dall'esecuzione delle due versioni sul medesimo problema (a prescindere dalle variazioni stocastiche).
+
 \begin{itemize}
-\item Diverse rappresentazioni interne: linearizzata (array) con notazione prefissa, ad albero con riferimenti bidirezionali
-\item Generazione della popolazione iniziale: \emph{grow} con probabilità 50\% di selezionare simboli terminali; \emph{ramped half-and-half} con parametri configurabili (di fatto 50\%-50\% full/grow e 50\% di terminazione prima della profondità massima)
+\item Generazione della popolazione iniziale: \emph{grow} con probabilità 50\% di selezionare simboli terminali; \emph{ramped half-and-half} con parametri configurabili (di fatto 50\%-50\% \emph{full}/\emph{grow} e 50\% di terminazione prima della profondità massima per \emph{grow})
+\item Costanti numeriche: definite staticamente ``una-tantum'' o generate su richiesta tramite \emph{ephemeral random constant}
+\item Sostituzione immediata degli individui nella popolazione; netta separazione tra generazioni.
+\item Operatori: TODO
 \end{itemize}
 
-\subsection{Analogie e differenze concettuali}
-Similmente a \emph{TinyGP} il numero di individui per generazione è costante, tuttavia in \emph{NotSoTinyGP} non vengono effettuati tornei negativi per la sostituzione degli individui. Questo perché, per scelta, ogni generazione è rigidamente separata dalla precedente e dalla successiva, con la conseguenza che ogni individuo appartenente alla generazione $i$ può derivare unicamente da un'operazione genetica effettuata su uno (o più) individui della generazione $(i-1)$.\\
+\subsection{Differenze concettuali}
+\subsubsection{Generazione della popolazione iniziale}
+% più varietà, anche se dopo poche generazioni questa stessa varietà può essere facilmente 'recuperata'
 
-Da notare come anche in questo caso vi è una certa probabilità che un individuo ``sparisca'' senza lasciare alcuna progenie, se non dovesse vincere alcun torneo di selezione, mentre altri, quelli che si dimostrano localmente più \emph{fit}, daranno vita a più nuovi individui.
+\subsubsection{Utilizzo di costanti numeriche}
+% più efficiente a runtime ma meno varietà, inoltre per alcuni semplici problemi potrebbe essere persino vantaggioso in quanto, lavorando con un set predefinito di costanti numeriche, diventa più facile per gli individui effettuare 'semplificazioni'
+
+\subsubsection{Selezione e sostituzione}
+Similmente a \emph{TinyGP}, il numero di individui per generazione è costante, tuttavia in \emph{NotSoTinyGP} non vengono effettuati tornei negativi per la sostituzione degli individui. Questo perché, per scelta, ogni generazione è rigidamente separata dalla precedente e dalla successiva, con la conseguenza che ogni individuo appartenente alla generazione $i$ può derivare unicamente da un'operazione genetica effettuata su uno (o più) individui della generazione $(i-1)$.\\
+
+Da notare come anche in questo caso vi sia una certa probabilità che un individuo ``sparisca'' senza lasciare alcuna progenie, se non dovesse vincere alcun torneo di selezione, mentre altri, quelli che dimostrano localmente di essere \emph{the fittest}, daranno vita a più nuovi individui.
+
+\subsubsection{Operatori TODO}
 
 \subsection{Approssimazione di una funzione polinomiale}
 \subsection{Approssimazione della funzione seno}
