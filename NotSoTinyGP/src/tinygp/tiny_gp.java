@@ -365,8 +365,9 @@ public class tiny_gp {
 		long s = -1;
 
 		if (args.length == 2) {
-			s = Integer.valueOf(args[0]).intValue();
-			fname = args[1];
+			// FIFR: swapped the 2 args
+			s = Integer.valueOf(args[1]).intValue();
+			fname = args[0];
 		}
 		if (args.length == 1) {
 			fname = args[0];
