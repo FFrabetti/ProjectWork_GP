@@ -16,40 +16,49 @@ import operators.SubtreeMutation;
 public class TestMutation {
 
 	public static void main(String[] args) {
-		Random random = new Random(2);
+		Random random = new Random(1);
 		
-		NodeFactory factory = new MockFactory(random, 0.5); // getRandomNode() selects terminals 50% of the times
-		PopulationGenerator generator = new GrowGenerator(factory, 3); // maxDepth = 3
+		double pTerm = 0.5; // getRandomNode() selects terminals pTerm (%) of the times
+		NodeFactory factory = new MockFactory(random, pTerm);
 		
-		Mutation stm = new SubtreeMutation(generator, new SubtreeCrossover(random));
-		Mutation ptm = new PointMutation(random, factory, 0.5); // pNode = 0.5 (50% of nodes will be mutated)
-
-		// n1 = ((4,6),2)
-		Node n1 = new OpNode(new OpNode(new NumNode(4), new NumNode(6)), new NumNode(2));
-		// n2 = (7,(9,3))
-		Node n2 = new OpNode(new NumNode(7), new OpNode(new NumNode(9), new NumNode(3)));
+		int maxDepth = 3;
+		PopulationGenerator generator = new GrowGenerator(factory, maxDepth);
+		double pFunction = 0.9; // probability of selecting a function as crossover point
+		Mutation stm = new SubtreeMutation(generator, new SubtreeCrossover(random, pFunction));
+		
+		double pNode = 0.5; // percentage of nodes that will be mutated
+		Mutation ptm = new PointMutation(random, factory, pNode);
+		// NOTE: mutating an OpNode, in this case, has no effect
+		
+		// note that MockFactory cannot produce such NumNodes, with getValue()>9
+		// this is useful to check whether a node has been mutated or not
+		
+		// n1 = ((14,16),12)
+		Node n1 = new OpNode(new OpNode(new NumNode(14), new NumNode(16)), new NumNode(12));
+		// n2 = (17,(19,13))
+		Node n2 = new OpNode(new NumNode(17), new OpNode(new NumNode(19), new NumNode(13)));
 		
 		System.out.println("n1 = " + n1);
 		System.out.println("n2 = " + n2);
 		
 		System.out.println("\nSubtree mutation");
-		System.out.println("crossover with new ind. created with Grow (maxDepth=3, 50% chances of terminal)");
-		System.out.println("90% prob. of selecting a function as crossover point");
-		System.out.println("n1.1 = " + stm.mutate(n1));
-		System.out.println("n2.1 = " + stm.mutate(n2));
+		System.out.println("\t NodeFactory.pTerm = " + pTerm);
+		System.out.println("\t GrowGenerator.maxDepth = " + maxDepth);
+		System.out.println("\t SubtreeCrossover.pFunction = " + pFunction);
+		System.out.println("mutate(n1) = " + stm.mutate(n1));
+		System.out.println("mutate(n2) = " + stm.mutate(n2));
 		
-		// mutating an OpNode, in this case, has no effect
-		System.out.println("\nPoint mutation (pNode=0.5)");
-		System.out.println("n1.2 = " + ptm.mutate(n1));
-		System.out.println("n2.2 = " + ptm.mutate(n2));
+		System.out.println("\nPoint mutation");
+		System.out.println("\t NodeFactory.pTerm = " + pTerm);
+		System.out.println("\t PointMutation.pNode = " + pNode);
+		System.out.println("mutate(n1) = " + ptm.mutate(n1));
+		System.out.println("mutate(n2) = " + ptm.mutate(n2));
 		
 		// n3 = ((11,12),10)
-		// note that MockFactory cannot produce such NumNodes, with getValue()>9
-		// this is useful to check whether a node is mutated or not
 		Node n3 = new OpNode(new OpNode(new NumNode(11), new NumNode(12)), new NumNode(10));
 		System.out.println("\nPoint mutation of n3 = " + n3);
-		System.out.println("all points mutated: n3.1 = " + new PointMutation(random, factory, 1).mutate(n3));
-		System.out.println("none mutated: n3.2 = " + new PointMutation(random, factory, 0).mutate(n3));		
+		System.out.println("pNode=1 -> all nodes mutated = " + new PointMutation(random, factory, 1).mutate(n3));
+		System.out.println("pNode=0 -> none mutated = " + new PointMutation(random, factory, 0).mutate(n3));		
 	}
 
 }

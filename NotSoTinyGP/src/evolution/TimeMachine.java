@@ -18,19 +18,21 @@ public class TimeMachine {
 		this.operators = operators;
 	}
 	
-	// it can be invoked manually, or automatically by run()
+	// it can be invoked manually or automatically by run()
 	public Node[] nextGeneration(Node[] pop) {
 		Node[] generation = new Node[pop.length];
 		
-		// No negative tournament?
+		// No negative tournaments?
 		// In TinyGP the individuals of a generation are gradually replaced by the ones of the next,
 		// with negative tournaments used to select the "locally" worst individuals to be replaced.
-		// In this way, in case of crossover, an individual may have parents from its own generation.
-		
+		// In this way, an individual may have parents from its own generation!
+		//
 		// Differently from TinyGP, we decide to keep the "past" and the "future" generations separated
-		
+
+		// Fitness evaluation
 		// no "eager" evaluation of the fitness of new individuals, unlike TinyGP
 		// (in order to keep fitness evaluation confined elsewhere)
+		// this can be done in the termination condition, for example
 		
 		for(int i=0; i<generation.length; i++)
 			generation[i] = selectRandOp().apply(pop);
@@ -50,6 +52,7 @@ public class TimeMachine {
 	}
 
 	// see TinyGP evolve()
+	// returns the number of the 'final' generation
 	public int run(Node[] initialPop, int maxGen, Predicate<Node[]> terminationCriterion, Consumer<Node[]> action) {
 		currentGeneration = initialPop;
 
@@ -67,6 +70,7 @@ public class TimeMachine {
 	
 	// internally used by run() and to be used when run() == maxGen
 	// did it stop because maxGen was reached (fail) or because of a success in the last generation?
+	// [ equivalent: terminationCriterion.test(timeMachine.getCurrentGeneration()) ]
 	public boolean isSuccess(Predicate<Node[]> terminationCriterion) {
 		return terminationCriterion.test(currentGeneration);
 	}
@@ -75,7 +79,7 @@ public class TimeMachine {
 		return run(initialPop, maxGen, terminationCriterion, null);
 	}
 	
-	// it always returns maxGen
+	// no early termination condition: it always returns maxGen
 	public int run(Node[] initialPop, int maxGen) {
 		return run(initialPop, maxGen, gen -> false);
 	}

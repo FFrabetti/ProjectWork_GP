@@ -4,6 +4,7 @@ import java.util.Random;
 
 public abstract class NodeFactory {
 	
+	// easy access from sub-classes
 	protected final Random random;
 	
 	public NodeFactory(Random random) {
@@ -18,6 +19,7 @@ public abstract class NodeFactory {
 	
 	public abstract FunctionNode getRandomFunction();
 
+	// NOTE: use getRandomNode(double) when |terminal set| >> |function set| 
 	public Node getRandomNode() {
 		int tss = getTerminalSetSize();
 		int tot = tss + getFunctionSetSize();
