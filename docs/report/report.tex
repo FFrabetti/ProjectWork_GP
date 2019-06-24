@@ -440,8 +440,99 @@ Una nota addizionale riguarda il metodo \emph{grow}: fissata una profondità lim
 
 Per lasciare aperte le porte a qualsiasi scenario di utilizzo, la scelta di come gestire la generazione di un nodo casuale viene delegata alle varie implementazioni di \texttt{NodeFactory}, senza che nulla di predefinito venga cablato all'interno dell'algoritmo \emph{grow}.
 
-\subsection{Toy example: bilanciamento di pari e dispari}
-TODO
+\subsection{Toy example: interi pari e dispari}
+Una prima serie di test effettuati sull'implementazione creata, \emph{NotSoTinyGP}, sono stati svolti facendo ricorso ad un dominio estremamente semplice, costituito da un'unica funzione binaria (identificata dal simbolo ``\texttt{,}'', \textit{virgola}) e dagli interi tra 0 a 9 come simboli terminali.
+
+In questo dominio, un individuo a profondità 2 potrebbe essere il seguente: \texttt{(3,(4,5))}, ovvero un nodo radice avente come figlio sinistro il numero 3 e come figlio destro il sotto-albero costituito dalla coppia 4 e 5.\\
+
+L'obiettivo di questo ambiente giocattolo è unicamente quello di verificare il corretto funzionamento delle varie componenti fondamentali dell'algoritmo; a questo scopo sono stati predisposti dei semplici \texttt{main} di test relativi a: generazione della popolazione iniziale, crossover e mutazione\footnote{\texttt{TestInitialization}, \texttt{TestCrossover} e \texttt{TestMutation} nel package \texttt{test.mockimpl}}.
+
+Un ulteriore programma di test ha invece permesso di testare l'intera procedura di GP nel suo complesso, con anche le fasi di selezione e valutazione della fitness, ottenuta dalla formula:
+
+\[
+f(N)=\alpha*\beta \quad
+\text{con $\:\alpha=e^{-\abs{t-n_l}} \quad \beta=\frac{n_e}{n_l}$}
+\]
+
+Dove $t$ è il numero di simboli terminali desiderato (\texttt{target}), $n_l$ di quelli effettivi (\texttt{leaves}) e $n_e$ di quelli pari (\texttt{even}).
+
+Come è facile osservare, la fitness di un individuo $N$ così calcolata è un numero reale compreso tra 0 e 1, massimo quando: $t=n_l=n_e$, ovvero quando ci sono esattamente \texttt{target} foglie, tutte contenenti numeri pari.\\
+
+\noindent Il codice necessario per l'esecuzione dell'algoritmo viene riportato di seguito\footnote{Per il test è stata utilizzata un'istanza di \texttt{java.util.Random} con seed 1}:
+\begin{lstlisting}[language=Java,caption={Estratto di \texttt{TestLauncher}}]
+NodeFactory factory = new MockFactory(random, pTerm);
+PopulationGenerator generator = new GrowGenerator(factory, depth);
+
+FitnessFunction ff = new MockFitness(target);
+SelectionMechanism sel = new TournamentSelection(random, ff, tsize);
+
+Crossover stxo = new SubtreeCrossover(random);
+Operator crossover = new BaseOperator(pCrossover,
+	pop -> stxo.apply(sel.selectOne(pop), sel.selectOne(pop)));
+
+Mutation ptm = new PointMutation(random, factory, pMutNode);
+Operator mutation = new BaseOperator(pMutation,
+	pop -> ptm.mutate(sel.selectOne(pop)));
+
+Operator reproduction = new BaseOperator(pReproduction,
+	pop -> sel.selectOne(pop).clone());
+
+Node[] initialPop = generator.generate(popsize);
+TimeMachine tm = new TimeMachine(random, new Operator[] { crossover, mutation, reproduction });
+
+// termination: fitness of the best individual above a certain threshold
+Predicate<Node[]> terminationCriterion = pop -> 
+	ff.evalFitness(bestIndividual(pop,ff)) >= ff.maxFitness()-delta;
+int gen = tm.run(initialPop, generations, terminationCriterion);
+
+System.out.println("generation = " + gen + ", isSuccess = " + tm.isSuccess(terminationCriterion));
+Node best = bestIndividual(tm.getCurrentGeneration(), ff);
+System.out.println("best fitness = " + ff.evalFitness(best));
+System.out.println("best node = " + best);
+\end{lstlisting}
+
+Tutti i parametri di configurazione presenti sono ricavati tramite un apposito file \texttt{Properties}, passato come argomento:
+\begin{lstlisting}[caption={File mockimpl.properties}]
+#same as TinyGP:
+max_len=10000
+popsize=100
+depth=3
+generations=100
+crossover_prob=0.9
+pmut_per_node=0.05
+tsize=8
+
+#others:
+pTerm=0.5
+target=8
+mutation_prob=0.08
+fitness_delta=0.05
+\end{lstlisting}
+
+\noindent Il risultato stampato a video è il seguente:
+\begin{lstlisting}[caption={Output del programma}]
+generation = 4, isSuccess = true
+best fitness = 1.0
+best node = (((2,((2,0),2)),((8,6),0)),0)
+\end{lstlisting}
+Dopo 4 generazioni è stato ottenuto un individuo dalla fitness massima, ovvero con esattamente 8 simboli terminali (\texttt{target=8}), tutti costituiti da numeri pari. Tale individuo può essere rappresentato in due dimensioni come:
+\begin{verbatim}
+N
+| - 0
+| - -
+    | - -
+    |   | - 0
+    |   | - -
+    |       | - 6
+    |       | - 8
+    | - -
+        | - -
+        |   | - 2
+        |   | - -
+        |       | - 0
+        |       | - 2
+        | - 2
+\end{verbatim}
 
 \section{Confronto tra implementazioni}
 Al di là delle differenze puramente implementative, come la scelta della rappresentazione interna da utilizzare per gli individui, quello che risulta più significativo sono le differenze nell'algoritmo, ovvero le ragioni per le quali dovrei, sperabilmente, aspettarmi risultati diversi dall'esecuzione delle due versioni sul medesimo problema (a prescindere da ovvie variazioni stocastiche).\\
