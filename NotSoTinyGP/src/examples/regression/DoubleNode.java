@@ -1,4 +1,4 @@
-package examples.sin;
+package examples.regression;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

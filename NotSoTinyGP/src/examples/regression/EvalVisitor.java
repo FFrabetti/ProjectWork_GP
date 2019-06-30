@@ -1,4 +1,4 @@
-package examples.sin;
+package examples.regression;
 
 import java.util.Map;
 
@@ -25,6 +25,9 @@ public class EvalVisitor implements NodeVisitor {
 
 	@Override
 	public void visit(FunctionNode node) {
+		if(!(node instanceof OpNode))
+			throw new IllegalArgumentException("expected an instance of OpNode");
+		
 		OpNode opNode = (OpNode)node;
 
 		opNode.getLeft().accept(this);;
@@ -88,8 +91,15 @@ public class EvalVisitor implements NodeVisitor {
 	public void visit(TerminalNode node) {
 		if(node instanceof DoubleNode)
 			result = ((DoubleNode)node).getValue();
-		else if(node instanceof VarNode) // right-value
-			result = env.get(((VarNode)node).getName());
+		else if(node instanceof VarNode) { // right-value
+			String key = ((VarNode)node).getName();
+			if(!env.containsKey(key))
+				throw new IllegalArgumentException("undefined variable " + key);
+			
+			result = env.get(key);
+		}
+		else
+			throw new IllegalArgumentException("unknown instance of TerminalNode");
 	}
 	
 }

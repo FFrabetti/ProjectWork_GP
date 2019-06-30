@@ -1,4 +1,4 @@
-package examples.sin;
+package examples.regression;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class FitnessCases implements FitnessFunction {
 		double sum = 0;
 		
 		for(double[] fcase : fitnessCases) {
-			// for each variable load its input value
+			// for each variable, load its input value
 			Map<String,Double> env = new HashMap<>();
 			for(int i=0; i<fcase.length-1; i++)
 				env.put("x"+i, fcase[i]);

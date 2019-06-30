@@ -1,7 +1,5 @@
-package examples.sin;
+package examples.regression;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import model.FunctionNode;
@@ -27,50 +25,50 @@ import model.TerminalNode;
  * NRAND can be set to 0, in which case MINRAND and MAXRAND are ignored. 
  */
 
-public class SinFactory extends NodeFactory {
+public class DoubleOpNodeFactory extends NodeFactory {
 	
-	private int nTerminals; // utility field (== terminals.size())
-	private List<TerminalNode> terminals;
+	private double pTerm;
+	private TerminalNode[] terminals;
+	private Class[] functions;
 	
-	private static List<Class<? extends FunctionNode>> functions = new ArrayList<>();
-	
-	static {
-		functions.add(PlusNode.class);
-		functions.add(MinusNode.class);
-		functions.add(TimesNode.class);
-		functions.add(DivNode.class);
-	}
-	
-	public SinFactory(Random random, int nvar, int nrand, double minrand, double maxrand) {
+	public DoubleOpNodeFactory(Random random, int nvar, int nrand, double minrand, double maxrand, double pTerm) {
 		super(random);
+		this.pTerm = pTerm;
 		
-		nTerminals = nvar + nrand;
-		terminals = new ArrayList<>(nTerminals);
-		
+		terminals = new TerminalNode[nvar + nrand];
 		for(int i=0; i<nvar; i++)
-			terminals.add(new VarNode("x"+i));
+			terminals[i] = new VarNode("x"+i);
+		for(int i=nvar; i<nrand; i++)
+			terminals[i] = new DoubleNode(random.nextDouble()*(maxrand-minrand)+minrand);
 		
-		for(int i=0; i<nrand; i++)
-			terminals.add(new DoubleNode(random.nextDouble()*(maxrand-minrand)+minrand));
+		functions = new Class[] {
+			PlusNode.class,
+			MinusNode.class,
+			TimesNode.class,
+			DivNode.class	
+		};
 	}
 
+	public DoubleOpNodeFactory(Random random, int nvar, int nrand, double minrand, double maxrand) {
+		this(random, nvar, nrand, minrand, maxrand, 0.5); // 50% prob. of selecting a terminal
+	}
+	
 	@Override
 	public Node getRandomNode() {
 		// p = |terminal_set|/(|terminal_set|+|function_set|)
 		// nTerminals >> functions.length !
-		// it uses a 50% prob. of selecting a terminal
-		return super.getRandomNode(0.5);
+		return super.getRandomNode(pTerm);
 	}
 
 	@Override
 	public TerminalNode getRandomTerminal() {
-		return (TerminalNode) terminals.get(random.nextInt(nTerminals)).clone();
+		return (TerminalNode) terminals[random.nextInt(terminals.length)].clone();
 	}
 
 	@Override
 	public FunctionNode getRandomFunction() {
 		try {
-			return functions.get(random.nextInt(functions.size())).newInstance();
+			return (FunctionNode) functions[random.nextInt(functions.length)].newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
@@ -85,12 +83,12 @@ public class SinFactory extends NodeFactory {
 
 	@Override
 	public int getTerminalSetSize() {
-		return nTerminals;
+		return terminals.length;
 	}
 
 	@Override
 	public int getFunctionSetSize() {
-		return functions.size();
+		return functions.length;
 	}
 
 }

@@ -1,4 +1,4 @@
-package examples.sin;
+package examples.regression;
 
 import model.Node;
 

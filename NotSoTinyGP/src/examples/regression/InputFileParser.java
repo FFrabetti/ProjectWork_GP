@@ -1,4 +1,4 @@
-package examples.sin;
+package examples.regression;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

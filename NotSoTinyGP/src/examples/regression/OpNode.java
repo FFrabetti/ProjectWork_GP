@@ -1,4 +1,4 @@
-package examples.sin;
+package examples.regression;
 
 import model.FunctionNode;
 import model.Node;
@@ -11,7 +11,7 @@ public abstract class OpNode extends FunctionNode {
 	}
 
 	OpNode() {
-		// used by SinFactory (remember to call setChildren() right afterward)
+		// used by the Factory (remember to call setChildren() right afterward)
 	}
 	
 	public Node getLeft() {
