@@ -27,5 +27,6 @@ gitign
 
 # data files
 *.csv
+NotSoTinyGP/runs/
 /.metadata/
 .recommenders

@@ -53,6 +53,9 @@ public class Launcher implements Launchable {
 			// e.printStackTrace();
 		}
 
+		// print args
+		System.out.println(launchable.getClass().getSimpleName() + ": " + fname + ", " + s + ", " + propertiesFile);
+		
 		launchable.launch(properties);
 	}
 

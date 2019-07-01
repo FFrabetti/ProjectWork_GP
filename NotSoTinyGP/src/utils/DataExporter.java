@@ -15,19 +15,12 @@ public class DataExporter {
 	private static final String DEF_SEPARATOR = ";";
 
 	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String separator, String[] header) {
-		try(PrintWriter pw = new PrintWriter(new File(fileName))) {
-			Collector<CharSequence, ?, String> collector = Collectors.joining(separator);
-			
-			if(header != null)
-				pw.println(Stream.of(header).collect(collector));
-			
-			for(Node n : pop)
-				pw.println(Stream.of(nodeToValues.apply(n)).collect(collector));
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+		String[][] lines = new String[pop.length][];
+		int i = 0;
+		for(Node n : pop)
+			lines[i++] = nodeToValues.apply(n);
 		
-		System.out.println(DataExporter.class.getSimpleName() + ": created file \" " + fileName + " \" ");
+		createCSV(lines, fileName, separator, header);
 	}
 
 	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String separator) {
@@ -42,4 +35,24 @@ public class DataExporter {
 		createCSV(pop, fileName, nodeToValues, DEF_SEPARATOR, header);
 	}
 
+	public static void createCSV(String[][] lines, String fileName, String separator, String[] header) {
+		try(PrintWriter pw = new PrintWriter(new File(fileName))) {
+			Collector<CharSequence, ?, String> collector = Collectors.joining(separator);
+			
+			if(header != null)
+				pw.println(Stream.of(header).collect(collector));
+			
+			for(String[] line : lines)
+				pw.println(Stream.of(line).collect(collector));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		
+		System.out.println(DataExporter.class.getSimpleName() + ": created file \" " + fileName + " \" ");
+	}
+	
+	public static void createCSV(String[][] lines, String fileName, String[] header) {
+		createCSV(lines, fileName, DEF_SEPARATOR, header);
+	}
+	
 }

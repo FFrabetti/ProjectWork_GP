@@ -1,9 +1,9 @@
-package test.sin;
+package test.regression;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import examples.sin.*;
+import examples.regression.*;
 import model.Node;
 import visitor.CountVisitor;
 

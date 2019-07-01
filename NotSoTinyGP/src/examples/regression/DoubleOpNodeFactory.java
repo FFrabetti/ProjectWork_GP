@@ -38,7 +38,7 @@ public class DoubleOpNodeFactory extends NodeFactory {
 		terminals = new TerminalNode[nvar + nrand];
 		for(int i=0; i<nvar; i++)
 			terminals[i] = new VarNode("x"+i);
-		for(int i=nvar; i<nrand; i++)
+		for(int i=nvar; i<nrand+nvar; i++)
 			terminals[i] = new DoubleNode(random.nextDouble()*(maxrand-minrand)+minrand);
 		
 		functions = new Class[] {
