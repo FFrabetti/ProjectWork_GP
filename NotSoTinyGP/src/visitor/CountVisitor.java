@@ -43,12 +43,10 @@ public class CountVisitor implements NodeVisitor {
 	public void visit(FunctionNode node) {
 		count(node);
 		
-		// it is the depth of its children
-		int localDepth = ++currDepth;
-		for(Node child : node.getChildren()) {
+		currDepth++;
+		for(Node child : node.getChildren())
 			child.accept(this);
-			currDepth = localDepth; // re-set current visiting depth
-		}
+		currDepth--;
 	}
 
 	@Override

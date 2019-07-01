@@ -104,7 +104,7 @@ public class PopulationAnalyser {
 	public void printFitness() {
 		System.out.println("Av. fitness = " + avFitness);
 		System.out.println("Max fitness = " + maxFitness);
-		System.out.println("Best ind. = " + bestNode);
+//		System.out.println("Best ind. = " + bestNode);
 	}
 
 	public int getMinDepth() {
