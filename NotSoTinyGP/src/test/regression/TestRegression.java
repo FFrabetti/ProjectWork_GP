@@ -29,6 +29,7 @@ import operators.Crossover;
 import operators.Mutation;
 import operators.Operator;
 import operators.PointMutation;
+import operators.PruneMutation;
 import operators.SubtreeCrossover;
 import selection.FitnessFunction;
 import selection.SelectionMechanism;
@@ -55,6 +56,8 @@ public class TestRegression implements Launchable {
 	// reproduction_prob = 1 - CROSSOVER_PROB - MUTATION_PROB
 	private static final double FITNESS_DELTA = 0.05; // ok if fitness >= maxFitness-DELTA
 	private static final String FILE_NAME = "resources/polynomial-data.txt";
+	private static final int MINDEPTH_PRUNE = 100;
+	private static final double PRUNE_PROB = 0.5;
 	
 	// args: resources/polynomial-data.txt 2 polynomial.properties
 	public static void main(String[] args) {
@@ -102,7 +105,20 @@ public class TestRegression implements Launchable {
 		double pMutNode = getDouble(properties, "pmut_per_node", PMUT_PER_NODE);
 		double pMutation = getDouble(properties, "mutation_prob", MUTATION_PROB);
 		Mutation ptm = new PointMutation(random, factory, pMutNode);
-		Operator mutation = new BaseOperator(pMutation, pop -> ptm.mutate(selection.selectOne(pop)));
+//		Operator mutation = new BaseOperator(pMutation, pop -> ptm.mutate(selection.selectOne(pop)));
+		int minDepthPrune = getInt(properties, "mindepth_prune", MINDEPTH_PRUNE);
+		double pPrune = getDouble(properties, "pPrune", PRUNE_PROB);
+		Mutation prm = new PruneMutation(random, minDepthPrune, pPrune, factory);
+		Operator mutation = new BaseOperator(pMutation, pop -> {
+			Node n = selection.selectOne(pop);
+			
+			CountVisitor cv = new CountVisitor();
+			n.accept(cv);
+			if(cv.getDepth() < minDepthPrune)
+				return ptm.mutate(n);
+			else
+				return prm.mutate(n);
+		});
 
 		double pReproduction = 1 - pCrossover - pMutation;
 		Operator reproduction = new BaseOperator(pReproduction, pop -> selection.selectOne(pop).clone());
