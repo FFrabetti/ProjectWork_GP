@@ -8,30 +8,28 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import model.Node;
-
 public class DataExporter {
 
 	private static final String DEF_SEPARATOR = ";";
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String separator, String[] header) {
+	public static <T> void createCSV(T[] pop, String fileName, Function<T,String[]> nodeToValues, String separator, String[] header) {
 		String[][] lines = new String[pop.length][];
 		int i = 0;
-		for(Node n : pop)
+		for(T n : pop)
 			lines[i++] = nodeToValues.apply(n);
 		
 		createCSV(lines, fileName, separator, header);
 	}
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String separator) {
+	public static <T> void createCSV(T[] pop, String fileName, Function<T,String[]> nodeToValues, String separator) {
 		createCSV(pop, fileName, nodeToValues, separator, null);
 	}
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues) {
+	public static <T> void createCSV(T[] pop, String fileName, Function<T,String[]> nodeToValues) {
 		createCSV(pop, fileName, nodeToValues, DEF_SEPARATOR);
 	}
 
-	public static void createCSV(Node[] pop, String fileName, Function<Node,String[]> nodeToValues, String[] header) {
+	public static <T> void createCSV(T[] pop, String fileName, Function<T,String[]> nodeToValues, String[] header) {
 		createCSV(pop, fileName, nodeToValues, DEF_SEPARATOR, header);
 	}
 
