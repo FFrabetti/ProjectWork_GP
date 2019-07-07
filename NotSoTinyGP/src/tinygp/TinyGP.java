@@ -268,7 +268,7 @@ public class TinyGP {
 		favgpop /= POPSIZE;
 		System.out.print("Generation=" + gen + " Avg Fitness=" + (-favgpop) + " Best Fitness=" + (-fbestpop)
 				+ " Avg Size=" + avg_len + "\nBest Individual: ");
-		print_indiv(pop[best], 0);
+//		print_indiv(pop[best], 0);
 		System.out.print("\n");
 		System.out.flush();
 		
@@ -384,8 +384,7 @@ public class TinyGP {
 		char[] newind;
 		print_parms();
 		// ---------------------------------------------------
-		String[] line = stats(fitness, pop, 0); // summmary
-		// initial
+		String[] line = stats(fitness, pop, 0);
 		createCSV(pop, "initial");
 		List<String[]> list = new LinkedList<>();
 		list.add(line);
@@ -397,28 +396,30 @@ public class TinyGP {
 //				System.exit(0);
 				success = true;
 			}
-			for (indivs = 0; indivs < POPSIZE; indivs++) {
-				if (rd.nextDouble() < CROSSOVER_PROB) {
-					parent1 = tournament(fitness, TSIZE);
-					parent2 = tournament(fitness, TSIZE);
-					newind = crossover(pop[parent1], pop[parent2]);
-				} else {
-					parent = tournament(fitness, TSIZE);
-					newind = mutation(pop[parent], PMUT_PER_NODE);
+			else {
+				for (indivs = 0; indivs < POPSIZE; indivs++) {
+					if (rd.nextDouble() < CROSSOVER_PROB) {
+						parent1 = tournament(fitness, TSIZE);
+						parent2 = tournament(fitness, TSIZE);
+						newind = crossover(pop[parent1], pop[parent2]);
+					} else {
+						parent = tournament(fitness, TSIZE);
+						newind = mutation(pop[parent], PMUT_PER_NODE);
+					}
+					newfit = fitness_function(newind);
+					offspring = negative_tournament(fitness, TSIZE);
+					pop[offspring] = newind;
+					fitness[offspring] = newfit;
 				}
-				newfit = fitness_function(newind);
-				offspring = negative_tournament(fitness, TSIZE);
-				pop[offspring] = newind;
-				fitness[offspring] = newfit;
+				// ---------------------------------------------------
+				list.add(stats(fitness, pop, gen));
+				// ---------------------------------------------------
 			}
-			// ---------------------------------------------------
-			list.add(stats(fitness, pop, gen));
-			// ---------------------------------------------------
 		}
-		System.out.print("PROBLEM *NOT* SOLVED\n");
+//		System.out.print("PROBLEM *NOT* SOLVED\n");
 		// ---------------------------------------------------
 		createCSV(pop, "final");
-		createResultFile(gen, success, currBest, fbestpop, "result");
+		createResultFile(gen-1, success, currBest, fbestpop, "result");
 		createSummaryCSV(list, "summary");
 		// ---------------------------------------------------
 //		System.exit(1);
