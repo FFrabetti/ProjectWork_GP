@@ -547,7 +547,7 @@ Dopo aver riassunto brevemente quelle che sono le differenze più significative 
 Popolazione iniziale & \emph{grow} ($P_{term}=50\%$) & \emph{ramped half-and-half} (50/50 \emph{full}/\emph{grow}, $P_{term}=50\%$) \\ \hline
 Costanti numeriche & set statico & \emph{ephemeral random constant} \\ \hline
 Tornei negativi & sì, sostituzione immediata & no, generazioni distinte \\ \hline
-Operatori & \emph{subtree crossover}, \emph{point mutation} & anche \emph{subtree mutation} e riproduzione \\
+Operatori & \emph{subtree crossover}, \emph{point mutation} & anche riproduzione (opt. \emph{subtree mutation}, \ldots)\\
 \end{tabular}
 \end{table}
 
@@ -559,42 +559,39 @@ Operatori & \emph{subtree crossover}, \emph{point mutation} & anche \emph{subtre
 %\end{itemize}
 
 \subsubsection{Generazione della popolazione iniziale}
-Gli individui della generazione 0 sono solitamente di scarso interesse `pratico', ovvero come candidate soluzioni al problema, prima ancora di averne valutato la fitness: in primo luogo perché si tratta pur sempre di individui totalmente casuali, non derivanti da alcun processo di selezione, e in secondo luogo poiché di una dimensione troppo ridotta per poter sperare di approssimare con sufficiente precisione una `buona' soluzione.
+Gli individui della generazione 0 sono solitamente di scarso interesse ``pratico'', ovvero come candidate soluzioni al problema in oggetto: in primo luogo perché si tratta pur sempre di individui totalmente casuali, non derivanti da alcun processo di selezione, e in secondo luogo poiché generalmente di una dimensione troppo ridotta per poter sperare di approssimare con sufficiente precisione una ``buona'' soluzione.
+Ciò che è rilevante è invece la \emph{varietà} della popolazione iniziale (e, di conseguenza, anche di quelle successive), poiché ciò garantisce di esplorare porzioni diverse dello spazio delle soluzioni, contrastando la tendenza a focalizzarsi su regioni localmente ottime tipica degli algoritmi di ricerca \emph{greedy}.
 
-Ciò che è rilevante è invece la varietà della popolazione iniziale (e, in effetti, anche di quelle successive), poiché ciò garantisce di esplorare porzioni diverse dello spazio delle soluzioni, contrastando la tendenza a focalizzarsi su regioni localmente ottime tipica degli algoritmi di ricerca \emph{greedy}.\\
+Sebbene da un lato il metodo \emph{ramped half-and-half} utilizzato in \emph{NotSoTinyGP} garantisca una maggiore varietà nella popolazione iniziale, è anche vero che questa stessa varietà può essere facilmente `recuperata' dopo poche generazioni a partire da una popolazione più omogenea, portando difficilmente a differenze significative tra i risultati ottenibili dalle due implementazioni.\\
 
-Sebbene da un lato i metodi utilizzati in \emph{NotSoTinyGP} garantiscano una maggiore varietà nella popolazione iniziale, questa stessa varietà può essere facilmente `recuperata' dopo poche generazioni a partire da una popolazione più omogenea, portando difficilmente a differenze significative tra i risultati ottenibili dalle due implementazioni.
-
-La varietà presente negli individui della popolazione iniziale potrebbe diventare rilevante in quei particolari casi in cui si è interessati a poche generazioni -- magari perché estremamente costose -- quindi si vuole evitare di pagare il prezzo di aspettare le ricombinazioni delle prime iterazioni.
+Pur riconoscendone l'importanza ai fini del processo di GP, la varietà degli individui presenti nella popolazione iniziale potrebbe diventare veramente determinante in quei particolari casi in cui si è interessati a poche generazioni -- magari perché estremamente costose -- quindi si vuole evitare di pagare il prezzo di aspettare le ricombinazioni delle prime iterazioni per raggiungere un grado di diversificazione adeguato.
 
 \subsubsection{Utilizzo di costanti numeriche}
-La scelta di generare una volta per tutte le costanti numeriche che tutti i programmi andranno ad utilizzare è, in larga parte, giustificabile per motivi di efficienza e, se vogliamo, di comodo, in quanto si pone un chiaro significato alla cardinalità dell'insieme dei simboli terminali.
+La scelta di generare una volta per tutte le costanti numeriche che tutti i programmi andranno ad utilizzare non è solamente una questione di efficienza, ma consente anche di attribuire un chiaro significato alla cardinalità dell'insieme dei simboli terminali, concetto più difficile da delineare nel caso di \emph{ephemeral random constant}.
+La conseguente minore varietà di costanti ad uso dei vari individui viene inoltre in parte appianata dalla possibilità di eseguire l'algoritmo di GP più e più volte, per poi tenere il risultato migliore.\\
 
-La conseguente minore varietà di costanti ad uso dei vari individui viene in parte appianata dalla possibilità di eseguire l'algoritmo di GP più e più volte, per poi tenere il risultato migliore.\\
-
-Un aspetto interessante da non trascurare è come, avendo un numero limitato di costanti numeriche a disposizione, risulti `più facile' effettuare semplificazioni e ricondursi a casi semplici anche con un numero medio-alto di nodi.
-
-Si pensi ad esempio alla funzione $2x+1$: questa potrebbe essere perfettamente rappresentata da un individuo a 2 livelli ($+\:*\:2\:x\:1$ in notazione prefissa), mentre per un individuo di profondità 7 la cosa non sarebbe affatto facile. Tuttavia, con le dovute semplificazioni di termini opposti, al momento della valutazione si potrebbe arrivare ad ottenere un'espressione equivalente anche \emph{esattamente uguale} a $2x+1$.
+Un aspetto interessante è come, avendo un numero limitato di simboli terminali a disposizione, risulti più facile effettuare semplificazioni e ricondursi a casi semplici anche con un alto numero di nodi per individuo (situazione tipica di generazioni avanzate).
+Si pensi ad esempio alla funzione $2x+1$: questa potrebbe essere perfettamente rappresentata da un individuo a 2 livelli ($+\:*\:2\:x\:1$ in notazione prefissa), mentre per un individuo di profondità 7 la cosa non sarebbe affatto facile. Tuttavia, con le dovute semplificazioni di termini ``opposti'', al momento della valutazione si potrebbe arrivare ad ottenere un'espressione equivalente anche \emph{esattamente uguale} a $2x+1$.
 
 \subsubsection{Selezione e sostituzione}
 In entrambe le implementazioni il numero di individui per generazione è costante, tuttavia in \emph{NotSoTinyGP} non vengono effettuati tornei negativi per la sostituzione degli individui. Questo perché, per scelta, ogni generazione è rigidamente separata dalla precedente e dalla successiva, con la conseguenza che ogni individuo appartenente alla generazione $i$ può derivare unicamente da un'operazione genetica effettuata su uno o più individui della generazione $(i-1)$.\\
 
-I tornei negativi aumentano la velocità di sostituzione degli individui `peggiori', da un lato con l'ovvio effetto benefico di velocizzare la ricerca tra quelli invece più performanti, dall'altro riducendo la varietà presente all'interno della popolazione: avere solo individui simili tra loro, infatti, è tutt'altro che desiderabile poiché equivale a focalizzarsi su un'unica zona dello spazio delle soluzioni. %(riducendo, di fatto, l'intero procedimento ad una pura \emph{greedy search}).
+I tornei negativi aumentano la velocità di sostituzione degli individui peggiori, da un lato con l'ovvio effetto benefico di velocizzare la ricerca tra quelli invece più performanti, dall'altro riducendo potenzialmente la varietà presente all'interno della popolazione, limitando la ricerca nello spazio delle soluzioni.
 
-Da notare come in ambedue le implementazioni vi sia una certa probabilità che un individuo ``sparisca'' senza lasciare alcuna progenie, se non dovesse vincere alcun torneo di selezione, mentre altri, quelli che dimostrano localmente di essere \emph{the fittest}, daranno vita a più nuovi individui.
+Da notare come in ambedue le implementazioni vi sia una certa probabilità che un individuo ``sparisca'' senza lasciare alcuna progenie, se non dovesse vincere alcun torneo di selezione, mentre altri, quelli che dimostrano localmente di essere \emph{the fittest}, daranno vita a più nuovi individui della generazione successiva.
 
 \subsubsection{Operatori}
-Anche in questo caso il fatto di poter contare su un maggior numero di operatori genetici punta ad incrementare la varietà nella popolazione, e quindi a rendere più efficace il processo di ricerca.
+Anche in questo caso il fatto di poter contare su un maggior numero di operatori genetici punta ad incrementare la varietà nella popolazione, e quindi a rendere più efficace il processo di ricerca. Questo però non significa che sia desiderabile introdurre un numero elevato di operatori diversi in modo arbitrario.
 
-In linea teorica, dietro ad ogni operatore risiederebbero motivazioni almeno in parte \emph{domain dependent}: in altre parole, se si utilizza il \emph{crossover} è perché si fa la (forte) assunzione che la combinazione di due individui ad alta fitness dia, con una certa probabilità, un individuo la cui fitness è maggiore rispetto a quella che si avrebbe, probabilisticamente parlando, dalla combinazione di genitori con fitness più scarsa.
+In linea teorica, dietro ad ogni operatore risiederebbero motivazioni almeno in parte \emph{domain dependent}: in altre parole, se si utilizza il \emph{crossover} è perché si fa la (forte) assunzione che, relativamente al problema in esame, la combinazione di due individui ad alta fitness dia, con una certa probabilità, un individuo la cui fitness è maggiore rispetto a quella che si avrebbe, probabilisticamente parlando, dalla combinazione di genitori con fitness più scarsa.
+Poiché tuttavia i problemi a cui vengono applicate tecniche di GP sono solitamente così complessi da non consentire di avere basi teoriche sufficienti da giustificare a priori l'utilizzo di un operatore piuttosto che un altro, quello che spesso si fa è andare per tentativi: non conoscendo la migliore combinazione di operatori possibile, si cerca di utilizzarne vari, sperando che questi garantiscano una \emph{ragionevole} (ovvero non semplicemente casuale) ricerca nello spazio delle soluzioni.\\
 
-Poiché tuttavia i problemi a cui vengono applicate tecniche di GP sono solitamente così complessi da non consentire di avere basi teoriche sufficienti da giustificare a priori l'utilizzo di un operatore piuttosto che un altro, quello che si fa è andare per tentativi: non conoscendo la migliore combinazione di operatori possibile, si cerca di utilizzarne vari, sperando che questi garantiscano una \emph{ragionevole} (ovvero non semplicemente casuale) ricerca nello spazio delle soluzioni.\\
-
-Un operatore degno di menzione, impiegato in \emph{NotSoTinyGP} e presente in letteratura, è la riproduzione, ovvero la semplice `copia' di un individuo -- selezionato in base alla sua fitness -- da una generazione a quella successiva. L'utilizzo di questo operatore è a priorità inferiore rispetto al \emph{crossover} e alla mutazione, puntando a preservare, in un certo senso, buone combinazioni di geni invariate.
+Un operatore degno di menzione, impiegato in \emph{NotSoTinyGP} e presente in letteratura, è la riproduzione, ovvero la semplice copia di un individuo -- selezionato in base alla sua fitness -- da una generazione a quella successiva. Questo operatore, a priorità inferiore rispetto a \emph{crossover} e mutazione, punta a preservare, in un certo senso, buone combinazioni di geni invariate nel tempo, rinunciando a modifiche che potrebbero migliorarne ma anche peggiorarne la fitness.
 
 \subsection{Approssimazione di una funzione polinomiale}
 \subsection{Approssimazione della funzione seno}
 \subsection{Performance e tuning dei parametri}
+TODO: PruneMutation
 
 \section{Applicazione al Gioco del Mulino}
 \subsection{Iper-euristiche}
