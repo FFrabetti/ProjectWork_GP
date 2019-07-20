@@ -599,8 +599,8 @@ Per la valutazione della fitness è stato utilizzato il principio adottato da \e
 
 \noindent Da interpretarsi nel seguente modo:
 \begin{itemize}
-\item Vengono impiegate una variabile e due costanti di valore compreso tra 0 e 5.
-\item Vi è un totale di 21 \emph{fitness case}, ovvero di coppie $(x ,y)$ corrispondenti ai valori interi della funzione per $x=0$ fino a $x=20$.x
+\item Vengono impiegate una variabile e due costanti di valore compreso tra 0 e 5
+\item Vi è un totale di 21 \emph{fitness case}, ovvero di coppie $(x ,y)$ corrispondenti ai valori interi della funzione per $x=0$ fino a $x=20$
 \end{itemize}
 
 Da notare come in \emph{NotSoTinyGP}, facendo uso di \emph{ephemeral random constant}, 2 rappresenti unicamente la probabilità ($2/3=66.66\%$) di selezionare una \emph{ERC} piuttosto che una variabile come simbolo terminale.
@@ -668,7 +668,7 @@ Un'importante questione di cui dovremo tenere conto riguarda la dimensione degli
 %\caption{ } \labelfig{ }
 \end{figure}
 
-Come risulta evidente, la ricerca effettuata da \emph{TinyGP} è finita col concentrarsi unicamente su una zona sub-ottima, nella fattispecie l'individuo $(x+x)*x = 2x^2$, tralasciando potenziali soluzioni migliori. Per contrastare questo problema è possibile aumentare la dimensione della popolazione: utilizzando campioni di 100000 individui (un incremento di 200 volte), infatti, il risultato diventa immediatamente confrontabile con quello raggiunto da \emph{NotSoTinyGP}\footnote{Un numero così elevato di individui è computazionalmente tollerabile per l'estrema efficienza di \emph{TinyGP} e perché l'algoritmo si è fermato dopo poche generazioni, quindi con individui ancora di dimensioni molto contenute}.\\
+Come risulta evidente, la ricerca effettuata da \emph{TinyGP} è finita col concentrarsi unicamente su una zona sub-ottima, nella fattispecie sull'individuo $(x+x)*x = 2x^2$, tralasciando potenziali soluzioni migliori. Per contrastare questo problema è possibile aumentare la dimensione della popolazione: utilizzando campioni di 100000 individui (un incremento di 200 volte), infatti, il risultato diventa confrontabile con quello raggiunto da \emph{NotSoTinyGP}\footnote{Un numero così elevato di individui è computazionalmente tollerabile per l'estrema efficienza di \emph{TinyGP} e perché l'algoritmo si è fermato dopo poche generazioni, quindi con individui ancora di dimensioni molto contenute}.\\
 
 \begin{figure}[!htb]
 \centering
@@ -705,17 +705,17 @@ Fitness delta 			& 1.26 				& 1.26					 	\\ %\hline
 \caption{} \label{tableSinParams}
 \end{table}
 
-Innanzitutto, dovendo considerare 63 \emph{fitness case}, in analogia al problema originario, si è deciso di alzare la soglia che determina quando la fitness di una soluzione sia accettabile come un successo a 1.26, ovvero tollerando un errore medio di 0.02 per ogni valore atteso per $y=sin(x)$.\\
+Innanzitutto, dovendo considerare 63 \emph{fitness case}, in analogia al problema originario, si è deciso di alzare la soglia che determina quando la fitness di una soluzione sia accettabile come un successo a 1.26, ovvero tollerando un errore medio di 0.02 su ognuno dei 63 valori attesi per $y=sin(x)$.\\
 
-Per rendere il problema trattabile dal punto di vista delle risorse di calcolo, è stato inoltre necessario introdurre un meccanismo che contrastasse la crescita degli individui generazione dopo generazione. Per quanto esistano in letteratura diverse strategie possibili, la scelta è ricaduta sull'adozione di un nuovo operatore genetico ad-hoc, chiamato \emph{Prune Mutation}, in sostituzione alla normale mutazione.
+Per rendere il problema trattabile dal punto di vista delle risorse di calcolo, è stato inoltre necessario introdurre un meccanismo per contrastare la crescita degli individui generazione dopo generazione. Per quanto esistano in letteratura diverse strategie possibili, la scelta è ricaduta sull'adozione di un nuovo operatore genetico ad-hoc, chiamato \emph{Prune Mutation}, in sostituzione alla normale mutazione.
 
-L'idea alla base consiste nell'assunzione che i nodi al di sotto di una certa profondità, contribuendo in minor peso al risultato, possano essere \emph{tagliati} per alleggerire gli individui molto grandi senza per questo perdere ``il grosso'' delle informazioni genetiche, conservate più vicino alla radice.
+L'idea alla base si fonda sull'assunzione che i nodi al di sotto di una certa profondità, contribuendo in minor peso al risultato, possano essere \emph{tagliati} per alleggerire gli individui molto grandi senza per questo perdere ``il grosso'' delle informazioni genetiche, conservate più vicino alla radice.
 
 Al lato pratico, vengono introdotti due nuovi parametri: una soglia di profondità minima al di sopra della quale viene applicato il pruning e una probabilità, per ogni nodo sopra soglia, di essere tagliato (l'intero sotto-albero viene sostituito con un nuovo simbolo terminale).
 
 Nel caso venga selezionata la mutazione, se un individuo non raggiunge la profondità minima necessaria viene applicata la normale \emph{point mutation}, altrimenti scatta la \emph{Prune Mutation}.\\
 
-\indent Vengono riportati i grafici relativi all'esecuzione di \emph{NotSoTinyGP} con in ingresso il file \texttt{/NotSoTinyGP/resources/sin-data2.txt}
+\indent Vengono riportati i grafici relativi all'esecuzione di \emph{NotSoTinyGP} con in ingresso il file \texttt{/NotSoTinyGP/resources/sin-data2.txt}.
 \begin{lstlisting}[caption={Prima riga di \texttt{/NotSoTinyGP/resources/sin-data2.txt}}]
 1 2 -5 5 63
 \end{lstlisting}
@@ -734,7 +734,7 @@ Nel caso venga selezionata la mutazione, se un individuo non raggiunge la profon
 
 Il successo viene raggiunto alla 90-esima generazione, con una fitness di circa 1.24. Una seconda esecuzione senza alcun margine sulla fitness ha rivelato che dopo 100 generazioni l'errore complessivo è riducibile a 1.14, ovvero circa 0.018 in media sul singolo \emph{fitness case}.\\
 
-L'effetto del pruning risulta evidente se si osserva l'andamento della profondità media e massima degli individui. In entrambi i grafici è visibile un rallentamento in corrispondenza della soglia impostata (80).\\
+L'effetto del pruning risulta evidente se si osserva l'andamento della profondità media e massima degli individui. In entrambi i grafici è infatti visibile un rallentamento in corrispondenza della soglia impostata (80).\\
 
 \begin{figure}[!htb]
 \centering
@@ -750,7 +750,7 @@ L'effetto del pruning risulta evidente se si osserva l'andamento della profondit
 
 Vengono ora riportati per il confronto i grafici relativi all'esecuzione sul medesimo problema di \emph{TinyGP}.\\
 
-Anche in questo caso, per evitare di incappare su un ottimo locale sono state considerate generazioni di 100000 individui, dal momento che test con popolazioni di dimensione 500 hanno portato a plateau ben lontani dalla soglia di 1.26.
+Anche in questo caso, per evitare di incappare in un ottimo locale sono state considerate generazioni di 100000 individui, dal momento che test con popolazioni di dimensione 500 hanno portato la fitness massima a plateau ben lontani dalla soglia di 1.26.
 
 Per quanto non vi sia, in \emph{TinyGP}, alcun meccanismo volto a limitare la dimensione delle soluzioni trovate, la terminazione con successo dopo poche generazioni ha di fatto evitato a monte il problema. Si tratta tuttavia di un caso eccezionale, sul quale non è possibile fare affidamento in generale.\\
 
@@ -766,12 +766,12 @@ Per quanto non vi sia, in \emph{TinyGP}, alcun meccanismo volto a limitare la di
 %\caption{ } \labelfig{ }
 \end{figure}
 
-Dopo 14 generazioni, la migliore soluzione trovata presenta una fitness attorno a 0.866, 0.014 per \emph{fitness case}, confrontabile con la soluzione precedentemente ottenuta con \emph{NotSoTinyGP}.
+Dopo 14 generazioni, la migliore soluzione trovata presenta una fitness attorno a 0.866, che corrisponde a 0.014 per \emph{fitness case}, valore confrontabile con la soluzione precedentemente ottenuta da \emph{NotSoTinyGP}.
 
 Si noti tuttavia come la dimensione media per gli individui si attesti attorno ai 2000 nodi, ben al di sopra di quella riscontrabile in \emph{NotSoTinyGP} dopo 90 generazioni.
 
 \subsection{Performance e tuning dei parametri}
-TODO: PruneMutation
+
 
 \section{Applicazione al Gioco del Mulino}
 \subsection{Iper-euristiche}
