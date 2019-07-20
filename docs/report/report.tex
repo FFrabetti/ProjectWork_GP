@@ -90,6 +90,7 @@
 \usepackage{url}
 \usepackage{xspace}
 \usepackage{color}
+\usepackage{booktabs}
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{../manifest}
@@ -610,19 +611,20 @@ Il numero di costanti viene portato a 100 per \emph{TinyGP}, che invece genera p
 
 \begin{table}
 \begin{tabular}{l | p{2.7cm} | p{4.3cm}}
-\textbf{Parametro} & \textbf{TinyGP} & \textbf{NotSoTinyGP} \\ \hline
-Max nr. generazioni & 100 & 100 \\ \hline
-Dim. popolazione & 500 & 500 \\ \hline 
-Profondità max iniziale & 3 (\emph{grow}) & 1-3 (\emph{ramped half-and-half}) \\ \hline
-Dim. tornei & 8 & 8 \\ \hline
-Prob. crossover & 0.9 & 0.9 \\ \hline
-Prob. mutazione & 0.1 & 0.08 (0.02 riproduzione) \\ \hline
-P. mutazione per nodo & 0.05 & 0.05 \\ \hline
+\textbf{Parametro}			& \textbf{TinyGP}	& \textbf{NotSoTinyGP}				\\ \hline
+Max nr. generazioni			& 100 				& 100 								\\ \hline
+Dim. popolazione			& 500 				& 500 								\\ \hline 
+Profondità max iniziale		& 3 (\emph{grow}) 	& 1-3 (\emph{ramped half-and-half})	\\ \hline
+Dim. tornei 				& 8 				& 8									\\ \hline
+Prob. crossover 			& 0.9 				& 0.9 								\\ \hline
+Prob. mutazione 			& 0.1 				& 0.08 (0.02 riproduzione)			\\ \hline
+P. mutazione per nodo 		& 0.05 				& 0.05 								\\ \hline
+Fitness delta 				& 0.05 				& 0.05 								\\
 \end{tabular}
 \caption{} \label{tablePolynomialParams}
 \end{table}
 
-In entrambi i casi è stato considerato un ``successo'' un individuo la cui fitness si trovi a meno di 0.05 dal massimo teorico, ovvero 0, ``fallimento'' se dopo \emph{max generazioni} la fitness migliore sia ancora al di sotto di questa soglia.
+In entrambi i casi è stato considerato un ``successo'' un individuo la cui fitness si trovi a meno di 0.05 (\texttt{fitness delta}) dal massimo teorico, ovvero 0, ``fallimento'' se dopo \texttt{max generazioni} la fitness migliore sia ancora al di sotto di questa soglia.
 
 I grafici che seguono mostrano l'andamento, per ogni generazione, della dimensione %e della fitness
 media degli individui e della fitness massima trovata.
@@ -686,6 +688,88 @@ L'algoritmo termina con successo dopo sole 5 generazioni, raggiungendo la fitnes
 \]
 
 \subsection{Approssimazione della funzione seno}
+Come già preannunciato, viene ripreso l'esperimento condotto nel testo \emph{A Field Guide to Genetic Programming} relativo all'approssimazione della funzione seno in un dato intervallo.\\
+
+Le differenze relative ai parametri riportati nella tabella \ref{tablePolynomialParams} vengono riassunte nella tabella \ref{tableSinParams}.
+
+\begin{table}
+\begin{tabular}{l | p{2.7cm} | p{4.3cm}}
+\textbf{Parametro}		& \textbf{TinyGP} 	& \textbf{NotSoTinyGP} 		\\ \hline
+Prob. crossover 		& 0.9				& 0.7 						\\ \hline
+Prob. mutazione			& 0.1 				& 0.28* (0.02 riproduzione) \\ \hline
+P. mutazione per nodo 	& 0.05 				& 0.05 						\\ \hline
+Min profondità pruning 	& N/A 				& 80 						\\ \hline
+P. pruning per nodo 	& N/A 				& 0.5						\\ \hline
+Fitness delta 			& 1.26 				& 1.26					 	\\ %\hline
+\end{tabular}
+\caption{} \label{tableSinParams}
+\end{table}
+
+Innanzitutto, dovendo considerare 63 \emph{fitness case}, in analogia al problema originario, si è deciso di alzare la soglia che determina quando la fitness di una soluzione sia accettabile come un successo a 1.26, ovvero tollerando un errore medio di 0.02 per ogni valore atteso per $y=sin(x)$.\\
+
+Per rendere il problema trattabile dal punto di vista delle risorse di calcolo, è stato inoltre necessario introdurre un meccanismo che contrastasse la crescita degli individui generazione dopo generazione. Per quanto esistano in letteratura diverse strategie possibili, la scelta è ricaduta sull'adozione di un nuovo operatore genetico ad-hoc, chiamato \emph{Prune Mutation}, in sostituzione alla normale mutazione.
+
+L'idea alla base consiste nell'assunzione che i nodi al di sotto di una certa profondità, contribuendo in minor peso al risultato, possano essere \emph{tagliati} per alleggerire gli individui molto grandi senza per questo perdere ``il grosso'' delle informazioni genetiche, conservate più vicino alla radice.
+
+Al lato pratico, vengono introdotti due nuovi parametri: una soglia di profondità minima al di sopra della quale viene applicato il pruning e una probabilità, per ogni nodo sopra soglia, di essere tagliato (l'intero sotto-albero viene sostituito con un nuovo simbolo terminale).
+
+Nel caso venga selezionata la mutazione, se un individuo non raggiunge la profondità minima necessaria viene applicata la normale \emph{point mutation}, altrimenti scatta la \emph{Prune Mutation}.\\
+
+\indent Vengono riportati i grafici relativi all'esecuzione di \emph{NotSoTinyGP} con in ingresso il file \texttt{/NotSoTinyGP/resources/sin-data2.txt}
+\begin{lstlisting}[caption={Prima riga di \texttt{/NotSoTinyGP/resources/sin-data2.txt}}]
+1 2 -5 5 63
+\end{lstlisting}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/sin/avSize_1562008988380.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/sin/maxFitness_1562008988380.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+Il successo viene raggiunto alla 90-esima generazione, con una fitness di circa 1.24. Una seconda esecuzione senza alcun margine sulla fitness ha rivelato che dopo 100 generazioni l'errore complessivo è riducibile a 1.14, ovvero circa 0.018 in media sul singolo \emph{fitness case}.\\
+
+L'effetto del pruning risulta evidente se si osserva l'andamento della profondità media e massima degli individui. In entrambi i grafici è visibile un rallentamento in corrispondenza della soglia impostata (80).\\
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/sin/avDepth_1562008988380.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/sin/maxDepth_1562008988380.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+Vengono ora riportati per il confronto i grafici relativi all'esecuzione sul medesimo problema di \emph{TinyGP}.\\
+
+Anche in questo caso, per evitare di incappare su un ottimo locale sono state considerate generazioni di 100000 individui, dal momento che test con popolazioni di dimensione 500 hanno portato a plateau ben lontani dalla soglia di 1.26.
+
+Per quanto non vi sia, in \emph{TinyGP}, alcun meccanismo volto a limitare la dimensione delle soluzioni trovate, la terminazione con successo dopo poche generazioni ha di fatto evitato a monte il problema. Si tratta tuttavia di un caso eccezionale, sul quale non è possibile fare affidamento in generale.\\
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/tinygp/sin_pop100000_fdelta1.26/avSize_1562520873555.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/tinygp/sin_pop100000_fdelta1.26/maxFitness_1562520873555.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+Dopo 14 generazioni, la migliore soluzione trovata presenta una fitness attorno a 0.866, 0.014 per \emph{fitness case}, confrontabile con la soluzione precedentemente ottenuta con \emph{NotSoTinyGP}.
+
+Si noti tuttavia come la dimensione media per gli individui si attesti attorno ai 2000 nodi, ben al di sopra di quella riscontrabile in \emph{NotSoTinyGP} dopo 90 generazioni.
+
 \subsection{Performance e tuning dei parametri}
 TODO: PruneMutation
 
