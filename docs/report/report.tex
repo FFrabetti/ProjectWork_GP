@@ -370,14 +370,14 @@ L'unica discriminante tra un individuo creato in una generazione piuttosto che i
 
 La scelta, che premia la bassa occupazione di memoria e l'inserimento immediato di nuovi individui (potenzialmente migliori dei genitori), rende tuttavia il sistema più incline a soffrire di una possibile perdita di varietà dovuta proprio alle sostituzioni: una volta scelto un individuo tramite torneo negativo, infatti, questo viene perso per sempre anche se solo localmente peggiore di altri.
 
-\section{Old}
-Partendo dall'implementazione fornita in \footnote{\url{http://www.gp-field-guide.org.uk/}}, \emph{TinyGP}, un primo test consiste nell'eseguire il programma per approssimare, tramite Genetic Programming, la funzione seno in un certo intervallo (\texttt{[0, 6.2]}). Tuttavia, a differenza di quanto fatto in \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B4CompilingandRunningTinyGP.html}}, si sceglie di esplicitare un \emph{seed} come primo argomento da riga di comando (nella fattispecie uguale a 1), così da consentire l'esatta replicazione dell'esperimento.
-
-Data la struttura del progetto, occorre collocarsi in \texttt{\{USER\_SPECIFIC\}/ProjectWork\_GP/NotSoTinyGP/bin} ed utilizzare il comando:
-\begin{lstlisting}[caption={Esecuzione di TinyGP da riga di comando}]
-java tinygp.tiny_gp 1 ..\resources\sin\sin-data.txt > ..\tinygp_seed1.out
-\end{lstlisting}
-Per praticità di consultazione, tutto ciò che viene stampato in output viene rediretto in un apposito file di testo.
+%\section{Old}
+%Partendo dall'implementazione fornita in \footnote{\url{http://www.gp-field-guide.org.uk/}}, \emph{TinyGP}, un primo test consiste nell'eseguire il programma per approssimare, tramite Genetic Programming, la funzione seno in un certo intervallo (\texttt{[0, 6.2]}). Tuttavia, a differenza di quanto fatto in \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B4CompilingandRunningTinyGP.html}}, si sceglie di esplicitare un \emph{seed} come primo argomento da riga di comando (nella fattispecie uguale a 1), così da consentire l'esatta replicazione dell'esperimento.
+%
+%Data la struttura del progetto, occorre collocarsi in \texttt{\{USER\_SPECIFIC\}/ProjectWork\_GP/NotSoTinyGP/bin} ed utilizzare il comando:
+%\begin{lstlisting}[caption={Esecuzione di TinyGP da riga di comando}]
+%java tinygp.tiny_gp 1 ..\resources\sin\sin-data.txt > ..\tinygp_seed1.out
+%\end{lstlisting}
+%Per praticità di consultazione, tutto ciò che viene stampato in output viene rediretto in un apposito file di testo.
 
 \section{NotSoTinyGP}
 L'implementazione \emph{NotSoTinyGP} mira a re-interpretare le logiche dell'algoritmo di Genetic Programming viste in \emph{TinyGP} in chiave Object-Oriented, spostando il focus non tanto sulla compattezza del codice e la sua efficienza a runtime, quanto sulla modularità e sull'estensibilità.
@@ -589,6 +589,102 @@ Poiché tuttavia i problemi a cui vengono applicate tecniche di GP sono solitame
 Un operatore degno di menzione, impiegato in \emph{NotSoTinyGP} e presente in letteratura, è la riproduzione, ovvero la semplice copia di un individuo -- selezionato in base alla sua fitness -- da una generazione a quella successiva. Questo operatore, a priorità inferiore rispetto a \emph{crossover} e mutazione, punta a preservare, in un certo senso, buone combinazioni di geni invariate nel tempo, rinunciando a modifiche che potrebbero migliorarne ma anche peggiorarne la fitness.
 
 \subsection{Approssimazione di una funzione polinomiale}
+Un primo problema sul quale sono state testate le due implementazioni dell'algoritmo è quello di approssimare una funzione polinomiale, nella fattispecie la funzione $y(x)=2x^2+1$.
+
+Per la valutazione della fitness è stato utilizzato il principio adottato da \emph{TinyGP}, ovvero l'opposto della somma degli errori, in valore assoluto, commessi su una serie di \emph{fitness case} forniti tramite uno specifico file di input\footnote{Descritto nella \xss{TinyGP_parameters} e in \url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/B2InputDataFilesforTinyGP.html}}, di cui viene riportata la prima riga:
+\begin{lstlisting}[caption={Prima riga di \texttt{/NotSoTinyGP/resources/polynomial-data.txt}}]
+1 2 0 5 21
+\end{lstlisting}
+
+\noindent Da interpretarsi nel seguente modo:
+\begin{itemize}
+\item Vengono impiegate una variabile e due costanti di valore compreso tra 0 e 5.
+\item Vi è un totale di 21 \emph{fitness case}, ovvero di coppie $(x ,y)$ corrispondenti ai valori interi della funzione per $x=0$ fino a $x=20$.x
+\end{itemize}
+
+Da notare come in \emph{NotSoTinyGP}, facendo uso di \emph{ephemeral random constant}, 2 rappresenti unicamente la probabilità ($2/3=66.66\%$) di selezionare una \emph{ERC} piuttosto che una variabile come simbolo terminale.
+
+Il numero di costanti viene portato a 100 per \emph{TinyGP}, che invece genera preventivamente tutti i valori casuali di cui potrà disporre. La probabilità di selezionare variabili o costanti è data anche in questo caso dalla cardinalità dei due insiemi.\\
+
+\noindent Gli altri parametri significativi vengono riassunti nella tabella \ref{tablePolynomialParams}.\\
+
+\begin{table}
+\begin{tabular}{l | p{2.7cm} | p{4.3cm}}
+\textbf{Parametro} & \textbf{TinyGP} & \textbf{NotSoTinyGP} \\ \hline
+Max nr. generazioni & 100 & 100 \\ \hline
+Dim. popolazione & 500 & 500 \\ \hline 
+Profondità max iniziale & 3 (\emph{grow}) & 1-3 (\emph{ramped half-and-half}) \\ \hline
+Dim. tornei & 8 & 8 \\ \hline
+Prob. crossover & 0.9 & 0.9 \\ \hline
+Prob. mutazione & 0.1 & 0.08 (0.02 riproduzione) \\ \hline
+P. mutazione per nodo & 0.05 & 0.05 \\ \hline
+\end{tabular}
+\caption{} \label{tablePolynomialParams}
+\end{table}
+
+In entrambi i casi è stato considerato un ``successo'' un individuo la cui fitness si trovi a meno di 0.05 dal massimo teorico, ovvero 0, ``fallimento'' se dopo \emph{max generazioni} la fitness migliore sia ancora al di sotto di questa soglia.
+
+I grafici che seguono mostrano l'andamento, per ogni generazione, della dimensione %e della fitness
+media degli individui e della fitness massima trovata.
+
+%Vengono anche confrontate le distribuzioni della dimensione e della fitness degli individui delle popolazioni iniziali e finali, nei due casi.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/polynomial/avSize_1561974870333.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/polynomial/maxFitness_1561974870333.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+Come risulta visibile dai grafici, già alla generazione numero 8 l'errore totale è sceso al di sotto dell'unità.
+L'algoritmo termina infine con successo dopo sole 13 generazioni, ottenendo una funzione che si discosta dall'obiettivo (relativamente ai \emph{fitness case} considerati) di soli $0.0382$. 
+
+\noindent La soluzione trovata, composta da 35 nodi, può essere semplificata in:
+\[
+2x^2 + 1.9 - \beta
+\]
+Dove $\beta$ è una polinomio razionale che tende a 1 ($\lim_{x \to \infty} \beta = 1$). Nel complesso, quindi, una buona approssimazione di $2x^2+1$.\\
+
+Un'importante questione di cui dovremo tenere conto riguarda la dimensione degli individui nella popolazione, la cui media inizia a crescere vertiginosamente a partire dalla generazione 11. Una tale crescita incontrollata (\emph{bloat}) può facilmente portare il processo di GP ad essere computazionalmente ingestibile su un alto numero di iterazioni.\\
+
+\noindent Vengono ora riportati i grafici relativi all'esecuzione con \emph{TinyGP}.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/tinygp/polynomial_pop500/avSize_1562518256383.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/tinygp/polynomial_pop500/maxFitness_1562518256383.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+Come risulta evidente, la ricerca effettuata da \emph{TinyGP} è finita col concentrarsi unicamente su una zona sub-ottima, nella fattispecie l'individuo $(x+x)*x = 2x^2$, tralasciando potenziali soluzioni migliori. Per contrastare questo problema è possibile aumentare la dimensione della popolazione: utilizzando campioni di 100000 individui (un incremento di 200 volte), infatti, il risultato diventa immediatamente confrontabile con quello raggiunto da \emph{NotSoTinyGP}\footnote{Un numero così elevato di individui è computazionalmente tollerabile per l'estrema efficienza di \emph{TinyGP} e perché l'algoritmo si è fermato dopo poche generazioni, quindi con individui ancora di dimensioni molto contenute}.\\
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/tinygp/polynomial_pop100000/avSize_1562518129305.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.7\textwidth]{../../NotSoTinyGP/runs/tinygp/polynomial_pop100000/maxFitness_1562518129305.png}
+%\caption{ } \labelfig{ }
+\end{figure}
+
+L'algoritmo termina con successo dopo sole 5 generazioni, raggiungendo la fitness di $0.0003$ con un individuo di 17 nodi che, semplificato, risulta:
+\[
+2x^2+1.000014\ldots
+\]
+
 \subsection{Approssimazione della funzione seno}
 \subsection{Performance e tuning dei parametri}
 TODO: PruneMutation
