@@ -771,7 +771,19 @@ Dopo 14 generazioni, la migliore soluzione trovata presenta una fitness attorno 
 Si noti tuttavia come la dimensione media per gli individui si attesti attorno ai 2000 nodi, ben al di sopra di quella riscontrabile in \emph{NotSoTinyGP} dopo 90 generazioni.
 
 \subsection{Performance e tuning dei parametri}
+Dall'esecuzione delle due implementazioni dell'algoritmo di GP sui problemi in esame è risultato evidente come vi siano dei vincoli piuttosto importanti in termini di performance per quanto riguarda la gestione di popolazioni molto numerose o con un elevato numero di nodi per individuo. In questo aspetto, con scarsa sorpresa, \emph{TinyGP} si dimostra in chiaro vantaggio per via delle scelte implementative legate alla rappresentazione interna degli individui.
 
+Dal canto suo, \emph{NotSoTinyGP} può vantare una maggiore flessibilità derivante dalla possibilità di poter facilmente adottare diverse metodologie per l'inizializzazione della popolazione di partenza, nuovi operatori genetici, eccetera. In particolare, diventa fondamentale l'introduzione di meccanismi che limitino l'esplosione della dimensione delle candidate soluzioni al problema.\\
+
+Il fatto di utilizzare popolazioni così grandi, in combinazione con il meccanismo di sostituzione tramite tornei negativi, senza un margine netto tra una generazione e l'altra, porta in parte a giustificare lo scarso numero di generazioni necessarie a \emph{TinyGP} per convergere verso ottime soluzioni. Venendo generati nuovi individui 200 volte più di frequente, per ogni generazione, rispetto a \emph{NotSoTinyGP}, il ``peso'' dietro ad ogni singola generazione risulta certamente alterato rispetto a quelle necessarie all'altra implementazione.\\
+
+Al di là delle considerazioni appena enunciate, entrambe le implementazioni sono riuscite ad ottenere risultati tutto sommato comparabili, il che ci porta a concludere che -- una volta correttamente configurate -- la scelta tra le due possa essere guidata unicamente dalla natura del problema da risolvere: per problemi ``GP-standard'', per i quali è richiesta estrema velocità, footprint ridotto e una esplorazione più ampia possibile dello spazio delle soluzioni, \emph{TinyGP} risulta essere certamente il più indicato; viceversa, si può pensare di testare meccaniche più diversificate e complesse con il più strutturato, ma meno efficiente, \emph{NotSoTinyGP}.\\
+
+Un altro aspetto da considerare è il processo, per niente banale, di tuning dei parametri. Oltre ai risultati descritti nelle sezioni precedenti, vari altri test più o meno soddisfacenti sono stati effettuati alla ricerca di una ``buona'' combinazione di parametri da utilizzare, insieme efficace e computazionalmente gestibile.
+
+In questo come in molti altri algoritmi di ricerca, è chiaro come sia possibile ottenere risultati molto diversi con combinazioni diverse di parametri. Oltre alla dimensione della popolazione, è ad esempio possibile variare quella utilizzata per i tornei, aumentando o diminuendo la \emph{fitness pressure}, ovvero la probabilità che individui anche solo molto localmente migliori (o peggiori, per i tornei negativi) di altri vengano ripetutamente selezionati.
+
+Infine, facendo largamente ricorso, per sua natura, a processi stocastici, qualsiasi algoritmo di GP è pensato non solo per essere eseguito più e più volte con gli stessi parametri (e diverso seed), ma anche con un ampio spettro di parametri diversi, così da poter selezionare il risultato globalmente migliore. Ciò può essere automatizzato ricorrendo ad algoritmi specializzati per il tuning dei parametri.
 
 \section{Applicazione al Gioco del Mulino}
 \subsection{Iper-euristiche}
