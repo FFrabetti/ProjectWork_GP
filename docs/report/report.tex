@@ -713,7 +713,7 @@ L'idea alla base si fonda sull'assunzione che i nodi al di sotto di una certa pr
 
 Al lato pratico, vengono introdotti due nuovi parametri: una soglia di profondità minima al di sopra della quale viene applicato il pruning e una probabilità, per ogni nodo sopra soglia, di essere tagliato (l'intero sotto-albero viene sostituito con un nuovo simbolo terminale).
 
-Nel caso venga selezionata la mutazione, se un individuo non raggiunge la profondità minima necessaria viene applicata la normale \emph{point mutation}, altrimenti scatta la \emph{Prune Mutation}.\\
+Nel caso sia selezionata la mutazione, se un individuo non raggiunge la profondità minima necessaria, viene applicata la normale \emph{point mutation}, altrimenti scatta la \emph{Prune Mutation}.\\
 
 \indent Vengono riportati i grafici relativi all'esecuzione di \emph{NotSoTinyGP} con in ingresso il file \texttt{/NotSoTinyGP/resources/sin-data2.txt}.
 \begin{lstlisting}[caption={Prima riga di \texttt{/NotSoTinyGP/resources/sin-data2.txt}}]
@@ -786,19 +786,75 @@ In questo come in molti altri algoritmi di ricerca, è chiaro come sia possibile
 Infine, facendo largamente ricorso, per sua natura, a processi stocastici, qualsiasi algoritmo di GP è pensato non solo per essere eseguito più e più volte con gli stessi parametri (e diverso seed), ma anche con un ampio spettro di parametri diversi, così da poter selezionare il risultato globalmente migliore. Ciò può essere automatizzato ricorrendo ad algoritmi specializzati per il tuning dei parametri.
 
 \section{Applicazione al Gioco del Mulino}
-\subsection{Iper-euristiche}
-Il problema relativo al Gioco del Mulino per il quale viene chiamata in causa la Programmazione Genetica è quello di trovare buone euristiche, ottime o sub-ottime, tra tutte quelle possibili (potenzialmente infinite, in ogni caso tra un numero computazionalmente proibitivo). In questa sua applicazione, GP si colloca quindi come una forma di iper-euristica, ovvero come meccanismo di ricerca nello spazio delle euristiche.
+Il Gioco del Mulino (\emph{Nine Men's Morris}), o Schiera, è un gioco a conoscenza completa a due giocatori, il cui scopo è riuscire ad allineare tre pedine contigue sulla scacchiera, formando un Mulino, così da poter rimuovere una pedina avversaria. Il vincitore è colui che rende l'avversario impossibilitato a fare altri Mulini, lasciandolo con meno di 3 pedine in gioco o bloccando ogni sua possibile mossa lecita (sconfitta per ``soffocamento'').
 
-Da \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/128GPtoCreateSearchersandSolversHyperheuristics.html}}:
+Il gioco si alterna in tre fasi, con meccaniche leggermente diverse l'una dall'altra: nella prima ogni giocatore, a turno, posiziona una propria pedina in una qualsiasi posizione libera sulla scacchiera, nella seconda le pedine possono essere spostate in una casella adiacente, se libera, e nella terza e ultima fase in qualsiasi casella libera, contigua o meno.\\
+
+L'elenco completo e dettagliato delle regole del gioco è facilmente reperibile on-line, al netto di alcune variazioni minori di carattere regionale\footnote{\url{https://it.wikipedia.org/wiki/Mulino_(gioco)}}.
+
+\subsection{GP come iper-euristica}
+Il problema relativo al Gioco del Mulino per il quale viene chiamata in causa la Programmazione Genetica è quello di trovare ``buone'' euristiche tra tutte quelle possibili, potenzialmente infinite, da impiegare per la scelta della (miglior) mossa da effettuare in una data situazione della scacchiera. Il punto è quindi riuscire a generare espressioni che approssimino molto bene il valore teorico che esprime lo stato della partita in termini di vantaggio/svantaggio relativo del giocatore nei confronti del suo avversario.
+
+In questa sua applicazione, GP si classifica quindi come una iper-euristica, ovvero come meccanismo di ricerca nello spazio delle euristiche. Da \footnote{\url{https://cswww.essex.ac.uk/staff/rpoli/gp-field-guide/128GPtoCreateSearchersandSolversHyperheuristics.html}}:
 \begin{quote}
 The difference between meta-heuristics and hyper-heuristics is that the former operate directly on the problem search space with the goal of finding optimal or near-optimal solutions. The latter, instead, operate on the heuristics search space (which consists of the heuristics used to solve the target problem). The goal then is finding or generating high-quality heuristics for a problem, for a certain class of instances of a problem, or even for a particular instance.
 \end{quote}
 Sempre nella stessa pagina vengono presentati diversi casi in cui GP ha ottenuto ottimi risultati come iper-euristica.
 
-\subsection{Restrizione del problema}
+\subsection{Valutazione della fitness: restrizione del problema}
+Una volta che il processo di GP ha generato un individuo-euristica, occorre valutarne la fitness; per farlo, l'euristica trovata viene impiegata da un giocatore virtuale su una serie di partite: la proporzione di vittorie determina la bontà della soluzione.
+
+Per limitare un possibile effetto di overfitting, ovvero il fatto che un individuo ottenga un punteggio alto solamente perché abile nello sconfiggere un determinato avversario -- o perché si è scontrato contro avversari più deboli della media --, il giocatore virtuale deve disputare un discreto numero (\texttt{nrMatches}) di partite contro avversari diversi, selezionati in modo casuale.\\
+
+Perché ciò sia computazionalmente gestibile su popolazioni con un grande numero di individui e per molte generazioni, occorre limitare il Gioco del Mulino unicamente alla sua fase finale, ovvero quando uno dei due giocatori si ritrova ad avere in campo solo tre pedine ed è quindi libero di muoverle a piacimento sulle posizioni libere, senza vincoli di adiacenza.
+
+Il numero delle pedine bianche e nere e la loro posizione sulla scacchiera al momento dell'inizio della terza fase di gioco viene determinato in modo casuale per ogni partita. Ovviamente, uno dei due giocatori avrà esattamente 3 pedine e l'altro un numero $>3$. Anche il primo a giocare viene sorteggiato caso per caso.\\
+
+In aggiunta, per limitare la possibilità di ``cicli'', vengono imposti due vincoli addizionali che determinano la terminazione della partita:
+\begin{itemize}
+\item Un giocatore ripete la stessa mossa per \texttt{maxRepetitions} volte
+\item Nessuna pedina viene rimossa dal gioco dopo \texttt{stalemate} mosse 
+\end{itemize}
+In entrambi i casi, il match si considera concluso in parità\footnote{Si tratta naturalmente di una semplificazione, altri approcci potrebbero valutare caso per caso il numero di pedine rimaste ai due giocatori, eccetera.}.
+
 \subsection{Co-evoluzione: bianco VS nero}
+Poiché non vi è una perfetta simmetria tra un giocatore che gioca come bianco o come nero (il nero è leggermente avvantaggiato), una euristica che si dimostri valida per un ruolo potrebbe non risultare altrettanto efficace per l'altro, il che suggerisce l'idea di separare il problema originario in due: la ricerca di una buona euristica per il bianco e di una per il nero.
+
+Data la natura del problema, risulta sensato approcciarlo con il metodo della co-evoluzione: verranno evolute due popolazioni distinte, una per il bianco e una per il nero, e ad ogni generazione gli individui di una saranno utilizzati per la valutazione della fitness degli individui dell'altra, secondo le modalità descritte nella sezione precedente. Come diretta conseguenza di ciò, l'esito di un incontro andrà ad influire sulla fitness di entrambi i giocatori.
+
+\subsection{Alcune considerazioni pratiche}
+In linea teorica, un giocatore virtuale utilizzerebbe l'algoritmo \emph{Minimax} fino ad uno stato terminale del grafo degli stati del gioco, corrispondente a vittoria/sconfitta/pareggio, per poi propagare all'indietro il risultato trovato così da poter scegliere la mossa migliore da fare.
+
+Al lato pratico, questo è solitamente infattibile per un problema di esplosione combinatoria, pertanto si fa affidamento sull'approssimazione ottenuta tramite un'euristica. Per incrementare l'affidabilità dell'approssimazione, un certo numero di livelli del grafo vengono comunque esplorati con \emph{Minimax}, così da poter effettivamente ``vedere avanti'' di $n$ mosse.\\
+
+Nel nostro caso specifico, tuttavia, per preservare l'idea di partenza che prevede la distinzione tra le euristiche per il bianco da quelle per il nero, la scelta è quella di terminare la generazione del grafo dopo il primo livello, ovvero considerando unicamente tutti gli stati raggiungibili con ogni possibile mossa lecita a disposizione del giocatore.\\
+
+\subsubsection{Terminazione}
+Da notare come, conseguentemente alle limitazioni del gioco descritte nella sezione precedente, nessuno dei due giocatori può vincere per soffocamento: quello con 3 pedine non può bloccare abbastanza caselle, mentre l'altro non può impedire all'avversario di ``saltare'' da una parte all'altra della scacchiera. L'unico modo per vincere è rimuovere, formando dei Mulini, tante pedine avversarie da farne scendere il numero a 2.
+
+Inoltre, detto $Np_{max}$ il numero di pedine del giocatore che ne ha di più, vi è un limite superiore al numero di mosse necessarie per concludere la partita:
+\[
+maxMosse = (Np_{max}-2) * (\texttt{stalemate}-1)
+\]
+Nel caso peggiore, infatti, è proprio il giocatore con più pedine a dover scendere sotto la soglia delle 3, e per farlo il suo avversario deve necessariamente impiegare meno di \texttt{stalemate} mosse per ogni pedina rimossa (senza lui perderne nemmeno una, essendo già a 3!).
+
+\subsubsection{Simboli terminali e altri parametri}
+Al fine di valutare quali variabili siano più significative per rappresentare lo stato della partita, vengono fornite una serie di variabili nell'insieme dei simboli terminali:
+\begin{itemize}
+\item $Nmul$, $Nmul_a$: numero di Mulini propri e dell'avversario
+\item $Npair$, $Npair_a$: numero di coppie di pedine allineate, dove la terza casella è libera
+\item $Nfree$, $Nfree_a$: numero di caselle libere occupabili con una mossa dalle proprie pedine/dalle pedine avversarie
+\item $S_{xy}$: una variabile per ogni posizione $(x,y)$ sulla scacchiera, con valore 1/-1/0 se occupata da una pedina propria, avversaria o se libera
+\end{itemize}
+
+Si noti come sarebbe possibile introdurre un numero arbitrario di altre variabili, più o meno elaborate. Inoltre, come risulta evidente, vi sono dei legami tra le variabili menzionate, che non sono totalmente indipendenti. Altre informazioni sono invece derivabili dalla combinazione di più variabili, ad esempio il numero di pedine per ogni giocatore o quello delle pedine isolate.\\
+
+TODO: altri parametri % se diventa troppo lunga, separa le sezioni
+
 \subsection{Analisi e valutazione delle euristiche trovate}
 %\subsection{Semplificazione e posizione relativa delle variabili}
+% a che profondità (minima) si trovano le variabili nelle soluzioni migliori trovate?
+% più sono vicine alla radice, più probabilmente influiscono sul risultato -> hanno peso/importanza maggiore
 
 \section{Conclusioni}
 
