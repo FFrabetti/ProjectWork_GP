@@ -39,6 +39,7 @@ import utils.Launchable;
 import utils.Launcher;
 import utils.PopulationAnalyser;
 import visitor.CountVisitor;
+import visitor.PrintDepthVisitor;
 
 public class TestCoEvolution implements Launchable {
 
@@ -88,7 +89,7 @@ public class TestCoEvolution implements Launchable {
 		PopulationGenerator generator = new RampedHalfAndHalfGenerator(random, factory, mindepth, maxdepth);
 
 		int nMatches = getInt(properties, "nMatches", 20);
-		int maxMoves = getInt(properties, "maxMoves", 40);
+		int maxMoves = getInt(properties, "maxMoves", 20);
 		
 		int tsize = getInt(properties, "tsize", TSIZE);
 
@@ -198,6 +199,11 @@ public class TestCoEvolution implements Launchable {
 //		createResultFile(gen, tm.isSuccess(terminationCriterion), best, fitness.evalFitness(best), path);
 		createSummaryCSV(listPAW, path+"W");
 		createSummaryCSV(listPAB, path+"B");
+		
+		MulinoAnalyser lastW = listPAW.get(listPAW.size()-1);
+		createResultFile(listPAW.size()-1, true, lastW.getBestNode(), lastW.getMaxFitness(), path+"W");
+		MulinoAnalyser lastB = listPAB.get(listPAB.size()-1);
+		createResultFile(listPAB.size()-1, true, lastB.getBestNode(), lastB.getMaxFitness(), path+"B");
 	}
 
 	private Operator selectRandOp(Operator[] operators, Random random) {
@@ -254,6 +260,11 @@ public class TestCoEvolution implements Launchable {
 			pw.println("generation = " + gen + " - " + (success ? "SUCCESS" : "FAIL"));
 			pw.println("best fitness = " + fitness);
 			pw.println("best node = " + best);
+			
+			int maxDepth = 8;
+			PrintDepthVisitor pdv = new PrintDepthVisitor(maxDepth);
+			best.accept(pdv);
+			pw.println("best node (maxDepth=" + maxDepth + ") = " + pdv);
 			
 			System.out.println("Created file: " + name + ".result");
 		} catch (IOException e) {
